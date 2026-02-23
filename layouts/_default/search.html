@@ -1,0 +1,131 @@
+{{ define "main" }}
+<div class="max-w-3xl mx-auto px-4 py-12">
+    <h1 class="text-5xl font-bold mb-8 text-text-primary-light dark:text-text-primary-dark">{{ .Title }}</h1>
+    
+    <div class="relative mb-8">
+        <input type="text" id="search-input" placeholder="{{ T "searchPlaceholder" | default "Search..." }}" 
+            class="w-full px-5 py-3 pl-12 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-neutral-800 text-text-primary-light dark:text-text-primary-dark focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all duration-300 text-lg">
+        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+    </div>
+
+    <div id="search-results" class="space-y-6"></div>
+    <p id="no-results" class="hidden text-text-secondary-light dark:text-text-secondary-dark text-lg text-center py-8">
+        {{ T "noResults" | default "No results found." }}
+    </p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
+<script>
+(function() {
+    const lang = '{{ .Language.Lang }}';
+    
+    // Build search index from site data
+    const searchData = [];
+    
+    {{ $blogsData := index site.Data .Language.Lang "blogs" }}
+    {{ with $blogsData }}
+    {{ range .blogs }}
+    searchData.push({
+        title: {{ .title }},
+        summary: {{ .summary }},
+        link: {{ .link }},
+        tags: {{ .tags }},
+        type: 'blog',
+        date: {{ .date }}
+    });
+    {{ end }}
+    {{ end }}
+
+    {{ $projectsData := index site.Data .Language.Lang "projects" }}
+    {{ with $projectsData }}
+    {{ range .projects }}
+    searchData.push({
+        title: {{ .title }},
+        summary: {{ .description }},
+        link: {{ .website | default .code | default "#" }},
+        tags: {{ (split .tech ",") }},
+        type: 'project'
+    });
+    {{ end }}
+    {{ end }}
+
+    {{ $experienceData := index site.Data .Language.Lang "experience" }}
+    {{ with $experienceData }}
+    {{ range .experience }}
+    searchData.push({
+        title: {{ .role }},
+        summary: {{ .description }},
+        link: {{ .company_link | default "#" }},
+        tags: [{{ .company }}],
+        type: 'experience',
+        date: {{ .period }}
+    });
+    {{ end }}
+    {{ end }}
+
+    const fuse = new Fuse(searchData, {
+        keys: ['title', 'summary', 'tags'],
+        threshold: 0.4,
+        includeScore: true
+    });
+
+    const input = document.getElementById('search-input');
+    const resultsContainer = document.getElementById('search-results');
+    const noResults = document.getElementById('no-results');
+
+    const typeLabels = {
+        blog: '{{ T "blog" | default "Blog" }}',
+        project: '{{ T "project" | default "Project" }}',
+        experience: '{{ T "experience" | default "Experience" }}'
+    };
+
+    const typeColors = {
+        blog: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+        project: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+        experience: 'bg-green-500/10 text-green-400 border-green-500/20'
+    };
+
+    function renderResults(results) {
+        if (results.length === 0) {
+            resultsContainer.innerHTML = '';
+            noResults.classList.remove('hidden');
+            return;
+        }
+        noResults.classList.add('hidden');
+        resultsContainer.innerHTML = results.map(r => {
+            const item = r.item;
+            const tags = Array.isArray(item.tags) ? item.tags : [];
+            return `
+                <a href="${item.link}" class="block p-5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-neutral-800/50 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-300 hover:-translate-y-0.5">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="px-2 py-0.5 text-[11px] font-medium rounded-full border ${typeColors[item.type]}">${typeLabels[item.type]}</span>
+                        ${item.date ? `<span class="text-xs text-gray-400">${item.date}</span>` : ''}
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">${item.title}</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-2">${item.summary || ''}</p>
+                    <div class="flex flex-wrap gap-1.5">
+                        ${tags.map(t => `<span class="px-2 py-0.5 text-[10px] bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-md">${t.trim()}</span>`).join('')}
+                    </div>
+                </a>
+            `;
+        }).join('');
+    }
+
+    input.addEventListener('input', function() {
+        const query = this.value.trim();
+        if (query.length < 2) {
+            resultsContainer.innerHTML = '';
+            noResults.classList.add('hidden');
+            return;
+        }
+        const results = fuse.search(query);
+        renderResults(results);
+    });
+
+    // Focus search input on page load
+    input.focus();
+})();
+</script>
+{{ end }}

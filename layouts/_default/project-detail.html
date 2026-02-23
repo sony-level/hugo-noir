@@ -1,196 +1,270 @@
 {{ define "main" }}
-{{ if eq .Section "blogs" }}
-<!-- Blog layout matching project detail style -->
+<head>
+    <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
+</head>
+{{ $slug := .Params.slug }}
+{{ $projectsData := index site.Data .Language.Lang "projects" }}
+{{ $project := false }}
+{{ range $projectsData.projects }}
+  {{ if eq .slug $slug }}
+    {{ $project = . }}
+  {{ end }}
+{{ end }}
+
+{{ with $project }}
 <div class="max-w-7xl mx-auto px-4 py-12">
     <!-- Back link -->
-    <a href="{{ "blogs/" | absLangURL }}" class="inline-flex items-center gap-2 text-text-secondary-light dark:text-text-secondary-dark hover:text-accent-light dark:hover:text-accent-dark transition-colors duration-200 mb-8">
+    <a href="{{ "projects/" | absLangURL }}" class="inline-flex items-center gap-2 text-text-secondary-light dark:text-text-secondary-dark hover:text-accent-light dark:hover:text-accent-dark transition-colors duration-200 mb-8">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-        {{ T "backToBlogs" | default "Retour aux articles" }}
+        {{ T "backToProjects" | default "Back to Projects" }}
     </a>
 
     <!-- Header -->
     <header class="mb-10">
-        <h1 class="text-3xl md:text-5xl font-bold mb-4 text-text-primary-light dark:text-text-primary-dark">{{ .Title }}</h1>
-        <p class="text-lg text-text-secondary-light dark:text-text-secondary-dark mb-5">{{ .Params.description }}</p>
+        <h1 class="text-3xl md:text-5xl font-bold mb-4 text-text-primary-light dark:text-text-primary-dark">{{ .title }}</h1>
+        <p class="text-lg text-text-secondary-light dark:text-text-secondary-dark mb-5">{{ .description }}</p>
 
-        <!-- Meta info -->
-        <div class="flex flex-wrap items-center gap-4 mb-6 text-sm text-text-secondary-light dark:text-text-secondary-dark">
-            {{ with .Params.author }}
-            <div class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                <span>{{ . }}</span>
-            </div>
-            {{ end }}
-            <div class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2 January 2006" }}</time>
-            </div>
-        </div>
-
-        <!-- Tags + Share -->
-        {{ $shareURL := .Permalink }}
+        <!-- Tech tags + Share -->
+        {{ $shareURL := $.Page.Permalink }}
         <div class="flex flex-wrap items-center justify-between gap-3 md:gap-4 mb-6">
             <div class="flex flex-wrap gap-2">
-                {{ range .Params.tags }}
-                <span class="px-3 py-1 text-sm font-medium rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">{{ . }}</span>
+                {{ $techs := split .tech "," }}
+                {{ range $tech := $techs }}
+                <span class="px-3 py-1 text-sm font-medium rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">{{ $tech }}</span>
                 {{ end }}
             </div>
             <div class="flex items-center gap-2 text-text-secondary-light dark:text-text-secondary-dark">
                 <span class="text-xs font-semibold uppercase tracking-wide">{{ T "share" | default "Share" }}</span>
                 <div class="flex items-center gap-2">
-                    <a class="p-2 rounded-full transition-colors" style="background:#000;color:#fff" href="https://twitter.com/intent/tweet?text={{ urlquery .Title }}&url={{ urlquery $shareURL }}" target="_blank" aria-label="Share on X">
+                    <a class="p-2 rounded-full transition-colors" style="background:#000;color:#fff" href="https://twitter.com/intent/tweet?text={{ urlquery .title }}&url={{ urlquery $shareURL }}" target="_blank" aria-label="Share on X">
                         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M4 3h4.5l3.3 4.7L15.1 3H20l-5.3 7.3L20 21h-4.5l-3.3-4.7L8.9 21H4l5.4-7.7L4 3Z"/></svg>
                     </a>
-                    <a class="p-2 rounded-full transition-colors" style="background:#FF4500;color:#fff" href="https://www.reddit.com/submit?url={{ urlquery $shareURL }}&title={{ urlquery .Title }}" target="_blank" aria-label="Share on Reddit">
+                    <a class="p-2 rounded-full transition-colors" style="background:#FF4500;color:#fff" href="https://www.reddit.com/submit?url={{ urlquery $shareURL }}&title={{ urlquery .title }}" target="_blank" aria-label="Share on Reddit">
                         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12s4.477 10 10 10 10-4.477 10-10Zm-6.07-1.64a1.13 1.13 0 0 1 1.6.189 1.12 1.12 0 0 1-.19 1.595c.12.3.18.62.18.944 0 1.97-2.24 3.57-5 3.57s-5-1.6-5-3.57c0-.32.06-.64.18-.94a1.12 1.12 0 0 1-.19-1.6 1.13 1.13 0 0 1 1.6-.19c.52-.33 1.18-.54 1.9-.57l.72-3.38c.05-.2.28-.34.5-.28l1.94.44c.2-.34.57-.57 1-.57.64 0 1.15.5 1.15 1.13 0 .63-.51 1.14-1.15 1.14-.64 0-1.15-.51-1.15-1.14 0-.08.01-.16.03-.24l-1.6-.36-.64 3.01c.78.02 1.48.23 2 .56Zm-4.88 3.81c0-.63-.51-1.14-1.15-1.14-.63 0-1.15.51-1.15 1.14 0 .63.52 1.14 1.15 1.14.64 0 1.15-.51 1.15-1.14Zm4.5 1.55a.4.4 0 0 0-.56-.11c-.5.33-1.33.73-2.5.73-1.18 0-2-.4-2.51-.73a.4.4 0 1 0-.45.67c.66.44 1.6.9 2.96.9 1.35 0 2.28-.46 2.94-.9a.4.4 0 0 0 .12-.56Zm.14-2.69c-.63 0-1.14.51-1.14 1.14 0 .63.51 1.14 1.14 1.14.63 0 1.15-.51 1.15-1.14 0-.63-.52-1.14-1.15-1.14Z"/></svg>
                     </a>
-                    <a class="p-2 rounded-full transition-colors" style="background:#25D366;color:#fff" href="https://wa.me/?text={{ urlquery (printf "%s %s" .Title $shareURL) }}" target="_blank" aria-label="Share on WhatsApp">
+                    <a class="p-2 rounded-full transition-colors" style="background:#25D366;color:#fff" href="https://wa.me/?text={{ urlquery (printf "%s %s" .title $shareURL) }}" target="_blank" aria-label="Share on WhatsApp">
                         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2a10 10 0 0 0-8.7 14.93L2 22l5.2-1.36A10 10 0 1 0 12.04 2Zm0 18a7.94 7.94 0 0 1-4.07-1.12l-.29-.17-3.08.8.82-3-.19-.31A7.95 7.95 0 1 1 12.04 20Zm4.43-5.8c-.24-.12-1.43-.71-1.65-.79-.22-.08-.38-.12-.55.12-.16.24-.63.79-.77.95-.14.16-.29.18-.53.06-.24-.12-1.02-.38-1.94-1.22-.72-.64-1.2-1.42-1.34-1.66-.14-.24-.01-.37.11-.49.12-.12.24-.29.36-.43.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.55-1.33-.76-1.83-.2-.48-.41-.42-.55-.43l-.47-.01c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.6 4.12 3.64.58.25 1.03.4 1.38.51.58.18 1.1.15 1.51.09.46-.07 1.43-.58 1.63-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28Z"/></svg>
                     </a>
                     <a class="p-2 rounded-full transition-colors" style="background:#E4405F;color:#fff" href="#" data-copy-link data-url="{{ $shareURL }}" aria-label="Copy link for Instagram">
                         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4Zm0 2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H7Zm5 2.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 0 1 12 7.5Zm0 2A2.5 2.5 0 1 0 14.5 12 2.5 2.5 0 0 0 12 9.5ZM17.5 6a1 1 0 1 1-1 1 1 1 0 0 1 1-1Z"/></svg>
                     </a>
-                    <a class="p-2 rounded-full transition-colors" style="background:#0A0A0A;color:#fff" href="https://dev.to/new?prefill={{ urlquery .Title }}&canonical_url={{ urlquery $shareURL }}" target="_blank" aria-label="Save on Dev.to">
+                    <a class="p-2 rounded-full transition-colors" style="background:#0A0A0A;color:#fff" href="https://dev.to/new?prefill={{ urlquery .title }}&canonical_url={{ urlquery $shareURL }}" target="_blank" aria-label="Save on Dev.to">
                         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h18a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm4.2 5.2H5.8v7.6h1.9c1.6 0 2.4-.8 2.4-2.4V10c0-1.6-.8-2.4-2.4-2.4Zm.1 1.6c.6 0 .9.3.9 1v3.2c0 .7-.3 1-.9 1h-.6V9.8h.6Zm6.7-1.6h-2.6v9.2h1.6v-2.7h1c1.4 0 2.2-.8 2.2-2.3v-1.9c0-1.5-.8-2.3-2.2-2.3Zm-.1 1.5c.5 0 .7.3.7.8v1.9c0 .6-.2.8-.7.8h-.9V9.7h.9ZM18.2 8h-1.7l-1.1 9.2h1.6l.2-2h1l.2 2h1.6L18.2 8Zm-.9 5.7.3-3.4.3 3.4h-.6Z"/></svg>
                     </a>
                 </div>
             </div>
         </div>
 
+        <!-- Action links -->
+        <div class="flex flex-wrap gap-3">
+            {{ if .website }}<a href="{{ .website }}" target="_blank" class="pd-btn pd-btn-primary">{{ T "visitSite" | default "Visit" }} <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg></a>{{ end }}
+            {{ if .code }}<a href="{{ .code }}" target="_blank" class="pd-btn pd-btn-secondary"><svg class="w-4 h-4 mr-1.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg> Code</a>{{ end }}
+            {{ if .demo }}<a href="{{ .demo }}" target="_blank" class="pd-btn pd-btn-secondary">Demo</a>{{ end }}
+        </div>
+
         <!-- Banner Image -->
-        {{ with .Params.image }}
+        {{ if and .images (gt (len .images) 0) }}
         <div class="mt-6 -mx-4 md:mx-0 rounded-none md:rounded-xl overflow-hidden">
-            <img src="{{ . }}" alt="{{ $.Title }}" class="w-full h-auto max-h-[28rem] object-cover" loading="eager">
+            <img src="{{ index .images 0 }}" alt="{{ .title }}" class="w-full h-48 sm:h-64 md:h-80 object-cover" loading="eager">
         </div>
         {{ end }}
     </header>
 
-    <!-- Audio Reader -->
-    <div id="audio-reader" class="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-neutral-800/50 mb-8 overflow-hidden">
-        <div class="flex items-center gap-3 p-3">
-            <button id="tts-play" onclick="toggleTTS()" type="button" class="shrink-0 w-11 h-11 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center transition-colors duration-200" aria-label="Écouter">
-                <svg id="tts-play-icon" class="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                <svg id="tts-pause-icon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-            </button>
-            <button id="tts-stop" onclick="stopTTS()" type="button" class="hidden shrink-0 w-8 h-8 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-500 flex items-center justify-center transition-colors duration-200" aria-label="Arrêter">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
-            </button>
-            <div class="flex-1 min-w-0">
-                <div class="flex items-center justify-between mb-1.5">
-                    <div class="text-xs font-medium text-gray-600 dark:text-gray-300 flex items-center gap-1.5">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
-                        {{ $listenLabel := T "listenArticle" | default "Écouter cet article" }}<span id="tts-status" data-default="{{ $listenLabel }}">{{ $listenLabel }}</span>
-                    </div>
-                    <span id="tts-time" class="text-[10px] text-gray-400 dark:text-gray-500 tabular-nums"></span>
-                </div>
-                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 cursor-pointer" onclick="seekTTS(event)">
-                    <div id="tts-progress" class="bg-blue-500 h-1.5 rounded-full transition-all duration-200" style="width: 0%"></div>
-                </div>
-            </div>
-            <select id="tts-speed" onchange="setTTSSpeed(this.value)" class="text-xs bg-transparent border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1 text-gray-600 dark:text-gray-300 cursor-pointer">
-                <option value="0.75">0.75x</option>
-                <option value="1" selected>1x</option>
-                <option value="1.25">1.25x</option>
-                <option value="1.5">1.5x</option>
-                <option value="2">2x</option>
-            </select>
-        </div>
-    </div>
-
     <!-- Mobile TOC -->
-    {{ if .Params.toc }}
     <details class="lg:hidden mb-6 p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-neutral-800/50">
         <summary class="text-sm font-semibold text-text-secondary-light dark:text-text-secondary-dark cursor-pointer">{{ T "tableOfContents" | default "Table des matières" }}</summary>
         <nav class="toc-nav mt-3 text-sm">
-            {{ .TableOfContents }}
+            {{ $.Page.TableOfContents }}
         </nav>
     </details>
-    {{ end }}
 
-    <!-- Main content area -->
+    <!-- Main content area: TOC left + content center + comments right -->
     <div class="flex flex-col lg:flex-row gap-8">
 
         <!-- TOC Sidebar (desktop) -->
-        {{ if .Params.toc }}
-        <aside class="hidden lg:block lg:w-72 shrink-0 order-2 lg:order-1">
+        <aside class="hidden lg:block lg:w-64 shrink-0 order-2 lg:order-1">
             <div class="lg:sticky lg:top-8">
                 <h4 class="text-sm font-bold uppercase tracking-wider text-text-primary-light dark:text-text-primary-dark mb-4">{{ T "tableOfContents" | default "Table des matières" }}</h4>
-                <nav id="toc-nav" class="toc-nav space-y-2 text-sm max-h-[70vh] overflow-y-auto pr-2">
-                    {{ .TableOfContents }}
+                <nav id="toc-nav-pd" class="toc-nav space-y-2 text-sm max-h-[70vh] overflow-y-auto pr-2">
+                    {{ $.Page.TableOfContents }}
                 </nav>
+
+                <!-- Why/What/How cards below TOC -->
+                {{ if or .why .what .how }}
+                <div class="mt-8 space-y-4">
+                    {{ if .why }}
+                    <div class="pd-sidebar-card">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="pd-sidebar-icon"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/></svg></div>
+                            <h3 class="text-sm font-bold uppercase tracking-wider text-text-primary-light dark:text-text-primary-dark">{{ T "why" | default "Why" }}</h3>
+                        </div>
+                        <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark leading-relaxed">{{ .why }}</p>
+                    </div>
+                    {{ end }}
+                    {{ if .what }}
+                    <div class="pd-sidebar-card">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="pd-sidebar-icon"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg></div>
+                            <h3 class="text-sm font-bold uppercase tracking-wider text-text-primary-light dark:text-text-primary-dark">{{ T "what" | default "What" }}</h3>
+                        </div>
+                        <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark leading-relaxed">{{ .what }}</p>
+                    </div>
+                    {{ end }}
+                    {{ if .how }}
+                    <div class="pd-sidebar-card">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="pd-sidebar-icon"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17l-5.384-3.19A1.002 1.002 0 015 11.14V6.838a1 1 0 01.534-.886l5.384-3.19a1 1 0 01.964 0l5.384 3.19a1 1 0 01.534.886v4.3a1 1 0 01-.534.886l-5.384 3.19a1 1 0 01-.964 0z"/></svg></div>
+                            <h3 class="text-sm font-bold uppercase tracking-wider text-text-primary-light dark:text-text-primary-dark">{{ T "how" | default "How" }}</h3>
+                        </div>
+                        <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark leading-relaxed">{{ .how }}</p>
+                    </div>
+                    {{ end }}
+                </div>
+                {{ end }}
             </div>
         </aside>
-        {{ end }}
 
-        <!-- Blog Content -->
-        <div class="flex-1 order-1 lg:order-2">
+        <!-- Main content -->
+        <div class="flex-1 min-w-0 order-1 lg:order-2">
+            <!-- Why/What/How cards mobile -->
+            {{ if or .why .what .how }}
+            <div class="lg:hidden grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                {{ if .why }}
+                <div class="pd-sidebar-card">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="pd-sidebar-icon"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/></svg></div>
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-text-primary-light dark:text-text-primary-dark">{{ T "why" | default "Why" }}</h3>
+                    </div>
+                    <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark leading-relaxed">{{ .why }}</p>
+                </div>
+                {{ end }}
+                {{ if .what }}
+                <div class="pd-sidebar-card">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="pd-sidebar-icon"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg></div>
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-text-primary-light dark:text-text-primary-dark">{{ T "what" | default "What" }}</h3>
+                    </div>
+                    <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark leading-relaxed">{{ .what }}</p>
+                </div>
+                {{ end }}
+                {{ if .how }}
+                <div class="pd-sidebar-card">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="pd-sidebar-icon"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17l-5.384-3.19A1.002 1.002 0 015 11.14V6.838a1 1 0 01.534-.886l5.384-3.19a1 1 0 01.964 0l5.384 3.19a1 1 0 01.534.886v4.3a1 1 0 01-.534.886l-5.384 3.19a1 1 0 01-.964 0z"/></svg></div>
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-text-primary-light dark:text-text-primary-dark">{{ T "how" | default "How" }}</h3>
+                    </div>
+                    <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark leading-relaxed">{{ .how }}</p>
+                </div>
+                {{ end }}
+            </div>
+            {{ end }}
+
             <article class="max-w-3xl">
                 <div class="blog-content prose prose-lg max-w-none">
-                    {{ .Content }}
+                    {{ $.Page.Content }}
                 </div>
             </article>
 
-            <!-- Series Navigation -->
-            {{ if and .Params.series (ne .Params.series "") }}
-            {{ $seriesName := .Params.series }}
-            {{ $seriesPages := where (where site.RegularPages "Section" "blogs") ".Params.series" $seriesName }}
-            {{ $seriesPages = sort $seriesPages ".Params.series_order" "asc" }}
-            {{ if gt (len $seriesPages) 1 }}
-            <div class="mt-12 p-6 rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20">
-                <h3 class="text-lg font-bold text-text-primary-light dark:text-text-primary-dark mb-4 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                    {{ T "seriesTitle" | default "Série" }}: {{ $seriesName }}
-                </h3>
-                <ol class="space-y-2">
-                    {{ range $seriesPages }}
-                    <li class="flex items-center gap-2">
-                        {{ if eq $.Page.RelPermalink .RelPermalink }}
-                        <span class="w-6 h-6 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center font-bold">{{ .Params.series_order }}</span>
-                        <span class="font-semibold text-blue-600 dark:text-blue-400">{{ .Title }}</span>
-                        <span class="text-xs text-blue-500 ml-1">← {{ T "currentArticle" | default "actuel" }}</span>
-                        {{ else }}
-                        <span class="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs flex items-center justify-center font-bold">{{ .Params.series_order }}</span>
-                        <a href="{{ .RelPermalink }}" class="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 hover:underline">{{ .Title }}</a>
-                        {{ end }}
-                    </li>
+            <!-- App Store / Google Play download section -->
+            {{ if or .appstore .playstore }}
+            <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+                <h2 class="text-2xl font-bold mb-6 text-text-primary-light dark:text-text-primary-dark flex items-center gap-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    {{ T "downloadApp" | default "Download the App" }}
+                </h2>
+                <div class="flex flex-wrap gap-4">
+                    {{ if .appstore }}
+                    <a href="{{ .appstore }}" target="_blank" class="pd-store-badge">
+                        <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                        <div>
+                            <div class="text-[10px] uppercase tracking-wider opacity-80">{{ T "downloadOn" | default "Download on the" }}</div>
+                            <div class="text-lg font-semibold -mt-0.5">App Store</div>
+                        </div>
+                    </a>
                     {{ end }}
-                </ol>
+                    {{ if .playstore }}
+                    <a href="{{ .playstore }}" target="_blank" class="pd-store-badge">
+                        <svg class="w-7 h-7" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.198l2.807 1.626a1 1 0 0 1 0 1.73l-2.808 1.626L15.206 12l2.492-2.491zM5.864 2.658L16.802 8.99l-2.303 2.303-8.635-8.635z"/></svg>
+                        <div>
+                            <div class="text-[10px] uppercase tracking-wider opacity-80">{{ T "getItOn" | default "GET IT ON" }}</div>
+                            <div class="text-lg font-semibold -mt-0.5">Google Play</div>
+                        </div>
+                    </a>
+                    {{ end }}
+                </div>
             </div>
             {{ end }}
+
+            <!-- Tech tools scrolling carousel -->
+            {{ if .tools }}
+            <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+                <h2 class="text-2xl font-bold mb-6 text-text-primary-light dark:text-text-primary-dark">{{ T "techUsed" | default "Technologies & Tools" }}</h2>
+                <div class="pd-tech-carousel">
+                    <div class="pd-tech-track">
+                        {{ range .tools }}
+                        <div class="pd-tech-item">
+                            <i class="{{ .icon }}"></i>
+                            <span>{{ .name }}</span>
+                        </div>
+                        {{ end }}
+                        {{ range .tools }}
+                        <div class="pd-tech-item">
+                            <i class="{{ .icon }}"></i>
+                            <span>{{ .name }}</span>
+                        </div>
+                        {{ end }}
+                    </div>
+                </div>
+            </div>
             {{ end }}
 
-            <!-- Prev / Next Blog Navigation -->
-            {{ $allPosts := where site.RegularPages "Section" "blogs" }}
-            {{ $allPosts = $allPosts.ByDate.Reverse }}
-            {{ $prev := "" }}{{ $next := "" }}{{ $found := false }}
-            {{ range $i, $p := $allPosts }}
-              {{ if eq $p.RelPermalink $.Page.RelPermalink }}
-                {{ $found = true }}
-              {{ else if not $found }}
-                {{ $prev = $p }}
-              {{ else if and $found (eq $next "") }}
-                {{ $next = $p }}
+            <!-- Prev / Next Project Navigation -->
+            {{ $allProjects := $projectsData.projects }}
+            {{ $prevProject := false }}
+            {{ $nextProject := false }}
+            {{ $foundCurrent := false }}
+            {{ range $i, $p := $allProjects }}
+              {{ if eq $p.slug $slug }}
+                {{ $foundCurrent = true }}
+              {{ else if not $foundCurrent }}
+                {{ $prevProject = $p }}
+              {{ else if and $foundCurrent (eq $nextProject false) }}
+                {{ $nextProject = $p }}
               {{ end }}
             {{ end }}
-            {{ if or (ne $prev "") (ne $next "") }}
+            {{ if or (ne $prevProject false) (ne $nextProject false) }}
             <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {{ if ne $prev "" }}
-                <a href="{{ $prev.RelPermalink }}" class="group flex items-center gap-3 p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-200 hover:shadow-md">
+                {{ if ne $prevProject false }}
+                {{ $prevSlug := $prevProject.slug }}
+                {{ $prevPage := false }}
+                {{ range where (where site.RegularPages "Section" "projects") ".Params.slug" $prevSlug }}
+                  {{ $prevPage = . }}
+                {{ end }}
+                {{ if $prevPage }}
+                <a href="{{ $prevPage.RelPermalink }}" class="group flex items-center gap-3 p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-200 hover:shadow-md">
                     <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                     <div class="min-w-0">
-                        <p class="text-xs text-gray-400 mb-1">{{ T "prevArticle" | default "Article précédent" }}</p>
-                        <p class="text-sm font-semibold text-text-primary-light dark:text-text-primary-dark group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors truncate">{{ $prev.Title }}</p>
+                        <p class="text-xs text-gray-400 mb-1">{{ T "prevProject" | default "Projet précédent" }}</p>
+                        <p class="text-sm font-semibold text-text-primary-light dark:text-text-primary-dark group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors truncate">{{ $prevProject.title }}</p>
                     </div>
                 </a>
                 {{ else }}<div></div>{{ end }}
-                {{ if ne $next "" }}
-                <a href="{{ $next.RelPermalink }}" class="group flex items-center justify-end gap-3 p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-200 hover:shadow-md text-right">
+                {{ else }}<div></div>{{ end }}
+                {{ if ne $nextProject false }}
+                {{ $nextSlug := $nextProject.slug }}
+                {{ $nextPage := false }}
+                {{ range where (where site.RegularPages "Section" "projects") ".Params.slug" $nextSlug }}
+                  {{ $nextPage = . }}
+                {{ end }}
+                {{ if $nextPage }}
+                <a href="{{ $nextPage.RelPermalink }}" class="group flex items-center justify-end gap-3 p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-200 hover:shadow-md text-right">
                     <div class="min-w-0">
-                        <p class="text-xs text-gray-400 mb-1">{{ T "nextArticle" | default "Article suivant" }}</p>
-                        <p class="text-sm font-semibold text-text-primary-light dark:text-text-primary-dark group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors truncate">{{ $next.Title }}</p>
+                        <p class="text-xs text-gray-400 mb-1">{{ T "nextProject" | default "Projet suivant" }}</p>
+                        <p class="text-sm font-semibold text-text-primary-light dark:text-text-primary-dark group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors truncate">{{ $nextProject.title }}</p>
                     </div>
                     <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                 </a>
+                {{ else }}<div></div>{{ end }}
                 {{ else }}<div></div>{{ end }}
             </div>
             {{ end }}
@@ -201,17 +275,15 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
                     {{ T "comments" | default "Commentaires" }}
                 </h3>
-                <div id="giscus-container-mobile"></div>
+                <div id="giscus-container-mobile-pd"></div>
                 <script>
                 (function() {
-                    function getGiscusTheme() {
-                        return document.documentElement.classList.contains('dark') ? 'dark_dimmed' : 'light';
-                    }
+                    function getGiscusTheme() { return document.documentElement.classList.contains('dark') ? 'dark_dimmed' : 'light'; }
                     document.addEventListener('DOMContentLoaded', function() {
-                        var container = document.getElementById('giscus-container-mobile');
+                        var container = document.getElementById('giscus-container-mobile-pd');
                         if (!container || container.querySelector('iframe')) return;
-                        var desktopSidebar = document.querySelector('aside .comments-sidebar-widget');
-                        if (desktopSidebar && window.getComputedStyle(desktopSidebar.closest('aside')).display !== 'none') return;
+                        var desktopSidebar = document.querySelector('#giscus-container-pd');
+                        if (desktopSidebar && desktopSidebar.closest('aside') && window.getComputedStyle(desktopSidebar.closest('aside')).display !== 'none') return;
                         var script = document.createElement('script');
                         script.src = 'https://giscus.app/client.js';
                         script.setAttribute('data-repo', '{{ site.Params.giscus.repo }}');
@@ -224,10 +296,9 @@
                         script.setAttribute('data-emit-metadata', '1');
                         script.setAttribute('data-input-position', 'top');
                         script.setAttribute('data-theme', getGiscusTheme());
-                        script.setAttribute('data-lang', '{{ .Language.Lang }}');
+                        script.setAttribute('data-lang', '{{ $.Page.Language.Lang }}');
                         script.setAttribute('data-loading', 'lazy');
-                        script.crossOrigin = 'anonymous';
-                        script.async = true;
+                        script.crossOrigin = 'anonymous'; script.async = true;
                         container.appendChild(script);
                     });
                 })();
@@ -244,7 +315,7 @@
                 </h4>
 
                 <!-- GitHub login prompt -->
-                <div id="gh-login-prompt" class="mb-4 p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-neutral-800/50 flex items-center gap-3">
+                <div id="gh-login-prompt-pd" class="mb-4 p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-neutral-800/50 flex items-center gap-3">
                     <div class="shrink-0 w-8 h-8 rounded-full bg-gray-900 dark:bg-white flex items-center justify-center">
                         <svg class="w-5 h-5 text-white dark:text-gray-900" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                     </div>
@@ -254,26 +325,13 @@
                     </div>
                 </div>
 
-                <!-- Connected alert -->
-                <div id="gh-connected-alert" class="hidden mb-4 p-3 rounded-xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 flex items-center gap-2 animate-fade-in">
-                    <div class="shrink-0 w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
-                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                    </div>
-                    <p class="text-xs font-medium text-green-700 dark:text-green-300 flex-1">{{ T "ghConnected" | default "Connecté avec GitHub" }}</p>
-                    <button onclick="this.parentElement.classList.add('hidden')" class="shrink-0 text-green-500 hover:text-green-700 dark:hover:text-green-300">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                    </button>
-                </div>
-
                 <!-- Giscus widget -->
-                <div id="giscus-container" class="comments-sidebar-widget max-h-[70vh] overflow-y-auto pr-1"></div>
+                <div id="giscus-container-pd" class="comments-sidebar-widget max-h-[70vh] overflow-y-auto pr-1"></div>
                 <script>
                 (function() {
-                    function getGiscusTheme() {
-                        return document.documentElement.classList.contains('dark') ? 'dark_dimmed' : 'light';
-                    }
+                    function getGiscusTheme() { return document.documentElement.classList.contains('dark') ? 'dark_dimmed' : 'light'; }
                     function loadGiscus() {
-                        const container = document.getElementById('giscus-container');
+                        const container = document.getElementById('giscus-container-pd');
                         if (!container || container.querySelector('iframe')) return;
                         const script = document.createElement('script');
                         script.src = 'https://giscus.app/client.js';
@@ -287,31 +345,21 @@
                         script.setAttribute('data-emit-metadata', '1');
                         script.setAttribute('data-input-position', 'top');
                         script.setAttribute('data-theme', getGiscusTheme());
-                        script.setAttribute('data-lang', '{{ .Language.Lang }}');
+                        script.setAttribute('data-lang', '{{ $.Page.Language.Lang }}');
                         script.setAttribute('data-loading', 'lazy');
-                        script.crossOrigin = 'anonymous';
-                        script.async = true;
+                        script.crossOrigin = 'anonymous'; script.async = true;
                         container.appendChild(script);
                     }
                     function updateGiscusTheme() {
                         const iframe = document.querySelector('iframe.giscus-frame');
                         if (!iframe) return;
-                        iframe.contentWindow.postMessage(
-                            { giscus: { setConfig: { theme: getGiscusTheme() } } },
-                            'https://giscus.app'
-                        );
+                        iframe.contentWindow.postMessage({ giscus: { setConfig: { theme: getGiscusTheme() } } }, 'https://giscus.app');
                     }
-                    const observer = new MutationObserver(function(mutations) {
-                        mutations.forEach(function(m) {
-                            if (m.attributeName === 'class') updateGiscusTheme();
-                        });
-                    });
-                    observer.observe(document.documentElement, { attributes: true });
-                    if (document.readyState === 'loading') {
-                        document.addEventListener('DOMContentLoaded', loadGiscus);
-                    } else {
-                        loadGiscus();
-                    }
+                    new MutationObserver(function(mutations) {
+                        mutations.forEach(function(m) { if (m.attributeName === 'class') updateGiscusTheme(); });
+                    }).observe(document.documentElement, { attributes: true });
+                    if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', loadGiscus); }
+                    else { loadGiscus(); }
                 })();
                 </script>
                 <noscript>
@@ -324,32 +372,9 @@
     </div>
 </div>
 
-{{ else }}
-<!-- Non-blog single page layout -->
-<div class="max-w-7xl mx-auto px-4 py-12">
-    <div class="flex flex-col lg:flex-row gap-8">
-        <div class="flex-1 min-w-0">
-            <article class="max-w-3xl mx-auto">
-                <header class="mb-8">
-                    <h1 class="text-3xl md:text-4xl font-bold mb-4 text-text-primary-light dark:text-text-primary-dark">{{ .Title }}</h1>
-                    {{ with .Params.image }}
-                    <div class="mb-6 -mx-4 md:mx-0 rounded-none md:rounded-xl overflow-hidden">
-                        <img src="{{ . }}" alt="{{ $.Title }}" class="w-full h-auto object-cover" loading="eager">
-                    </div>
-                    {{ end }}
-                </header>
-                <div class="prose prose-lg max-w-none">
-                    {{ .Content }}
-                </div>
-            </article>
-        </div>
-    </div>
-</div>
-{{ end }}
-
 <!-- Highlight.js for IDE-style syntax highlighting -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" id="hljs-dark-theme">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-light-theme" disabled>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" id="hljs-dark-theme-pd">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-light-theme-pd" disabled>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <!-- Mermaid for architecture diagrams -->
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
@@ -379,7 +404,8 @@
     html.dark .blog-content code { background: #1f2937; color: #e5e7eb; }
     .blog-content strong { color: #111827; font-weight: 600; }
     html.dark .blog-content strong { color: #f3f4f6; }
-    .blog-content img { border-radius: 0.75rem; margin: 1.5rem 0; }
+    .blog-content img { border-radius: 0.75rem; margin: 1.5rem 0; cursor: zoom-in; transition: box-shadow 0.2s ease; }
+    .blog-content img:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
     .blog-content table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.875rem; }
     .blog-content th { background: #f3f4f6; font-weight: 600; text-align: left; padding: 0.75rem 1rem; border: 1px solid #e5e7eb; }
     html.dark .blog-content th { background: #1f2937; border-color: #374151; color: #e5e7eb; }
@@ -388,55 +414,21 @@
     .blog-content .footnotes { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; font-size: 0.875rem; color: #6b7280; }
     html.dark .blog-content .footnotes { border-top-color: #374151; color: #9ca3af; }
 
-    /* ============================================
-       TERMINAL STYLE — for shell/bash/zsh commands
-       ============================================ */
-    .terminal-wrapper {
-        position: relative;
-        margin: 1.5rem 0;
-        border-radius: 0.75rem;
-        overflow: hidden;
-        border: 1px solid rgba(255,255,255,0.08);
-        background: rgba(10,10,14,0.92);
-        box-shadow: 0 8px 32px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03) inset;
-        backdrop-filter: blur(12px);
-    }
-    .terminal-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0.6rem 1rem;
-        background: rgba(5,5,8,0.95);
-        border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
+    /* Terminal style — shell commands */
+    .terminal-wrapper { position: relative; margin: 1.5rem 0; border-radius: 0.75rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); background: rgba(10,10,14,0.92); box-shadow: 0 8px 32px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03) inset; backdrop-filter: blur(12px); }
+    .terminal-header { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 1rem; background: rgba(5,5,8,0.95); border-bottom: 1px solid rgba(255,255,255,0.06); }
     .terminal-dots { display: flex; gap: 6px; }
     .terminal-dots span { width: 12px; height: 12px; border-radius: 50%; display: block; }
     .terminal-dots span:nth-child(1) { background: #ff5f57; }
     .terminal-dots span:nth-child(2) { background: #febc2e; }
     .terminal-dots span:nth-child(3) { background: #28c840; }
-    .terminal-lang {
-        font-size: 0.7rem; font-weight: 600; color: #28c840;
-        text-transform: uppercase; letter-spacing: 0.05em;
-    }
-    .terminal-copy {
-        display: flex; align-items: center; gap: 5px;
-        padding: 5px 12px; border-radius: 6px;
-        border: 1px solid rgba(255,255,255,0.1);
-        background: rgba(255,255,255,0.05);
-        color: rgba(255,255,255,0.6);
-        font-size: 0.72rem; font-weight: 500;
-        cursor: pointer; transition: all 0.2s ease;
-    }
+    .terminal-lang { font-size: 0.7rem; font-weight: 600; color: #28c840; text-transform: uppercase; letter-spacing: 0.05em; }
+    .terminal-copy { display: flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.6); font-size: 0.72rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; }
     .terminal-copy svg { flex-shrink: 0; }
     .terminal-copy:hover { background: rgba(255,255,255,0.12); color: #e0e0e0; border-color: rgba(255,255,255,0.2); }
     .terminal-copy.copied { background: #28c840; color: #fff; border-color: #28c840; }
     .terminal-wrapper pre { border-radius: 0; padding: 1.25rem; overflow-x: auto; margin: 0; border: none; background: transparent; }
-    .terminal-wrapper pre code {
-        padding: 0; background: transparent; color: #e5e7eb;
-        font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
-        font-size: 0.85rem; line-height: 1.7;
-    }
-    /* Shell syntax colors */
+    .terminal-wrapper pre code { padding: 0; background: transparent; color: #e5e7eb; font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace; font-size: 0.85rem; line-height: 1.7; }
     .blog-content pre code .sh-prompt { color: #a6e3a1; font-weight: 700; }
     .blog-content pre code .sh-sudo { color: #f38ba8; font-weight: 700; }
     .blog-content pre code .sh-command { color: #89b4fa; font-weight: 600; }
@@ -447,48 +439,13 @@
     .blog-content pre code .sh-url { color: #38bdf8; }
     .blog-content pre code .sh-variable { color: #f5c2e7; }
 
-    /* ============================================
-       IDE STYLE — for code blocks (non-shell)
-       Like a code editor / IDE with syntax colors
-       ============================================ */
-    .ide-wrapper {
-        position: relative;
-        margin: 1.5rem 0;
-        border-radius: 0.75rem;
-        overflow: hidden;
-        border: 1px solid #e2e8f0;
-        background: #fafbfc;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
-    html.dark .ide-wrapper {
-        border-color: #2d3748;
-        background: #1a1b26;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    }
-    .ide-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0.5rem 1rem;
-        background: #f1f5f9;
-        border-bottom: 1px solid #e2e8f0;
-    }
-    html.dark .ide-header {
-        background: #13141c;
-        border-bottom-color: #2d3748;
-    }
-    .ide-header-left {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    .ide-lang-icon {
-        width: 18px; height: 18px;
-        display: flex; align-items: center; justify-content: center;
-        border-radius: 4px;
-        font-size: 10px; font-weight: 700;
-        color: #fff;
-    }
+    /* IDE style — code blocks */
+    .ide-wrapper { position: relative; margin: 1.5rem 0; border-radius: 0.75rem; overflow: hidden; border: 1px solid #e2e8f0; background: #fafbfc; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    html.dark .ide-wrapper { border-color: #2d3748; background: #1a1b26; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+    .ide-header { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 1rem; background: #f1f5f9; border-bottom: 1px solid #e2e8f0; }
+    html.dark .ide-header { background: #13141c; border-bottom-color: #2d3748; }
+    .ide-header-left { display: flex; align-items: center; gap: 8px; }
+    .ide-lang-icon { width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 10px; font-weight: 700; color: #fff; }
     .ide-lang-icon.lang-javascript, .ide-lang-icon.lang-js { background: #f7df1e; color: #000; }
     .ide-lang-icon.lang-typescript, .ide-lang-icon.lang-ts { background: #3178c6; }
     .ide-lang-icon.lang-python, .ide-lang-icon.lang-py { background: #3776ab; }
@@ -517,77 +474,17 @@
     .ide-lang-icon.lang-text { background: #6b7280; }
     .ide-lang-icon.lang-mermaid { background: #ff3670; }
     .ide-lang-icon.lang-excalidraw { background: #6965db; }
-    .ide-lang {
-        font-size: 0.72rem; font-weight: 600;
-        color: #64748b; text-transform: uppercase; letter-spacing: 0.04em;
-    }
+    .ide-lang { font-size: 0.72rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; }
     html.dark .ide-lang { color: #94a3b8; }
-    .ide-copy {
-        display: flex; align-items: center; gap: 5px;
-        padding: 4px 10px; border-radius: 6px;
-        border: 1px solid #e2e8f0; background: transparent;
-        color: #64748b; font-size: 0.7rem; font-weight: 500;
-        cursor: pointer; transition: all 0.2s ease;
-    }
+    .ide-copy { display: flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 6px; border: 1px solid #e2e8f0; background: transparent; color: #64748b; font-size: 0.7rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; }
     html.dark .ide-copy { border-color: #374151; color: #94a3b8; }
     .ide-copy:hover { background: #e2e8f0; color: #334155; }
     html.dark .ide-copy:hover { background: #2d3748; color: #e2e8f0; }
     .ide-copy.copied { background: #10b981; color: #fff; border-color: #10b981; }
     .ide-copy svg { flex-shrink: 0; }
-
-    /* IDE code area with line numbers */
-    .ide-wrapper pre {
-        border-radius: 0; padding: 1rem 1.25rem;
-        overflow-x: auto; margin: 0; border: none;
-        background: transparent;
-    }
-    .ide-wrapper pre code {
-        padding: 0; background: transparent;
-        font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
-        font-size: 0.85rem; line-height: 1.7;
-    }
-    /* Override hljs background inside ide-wrapper */
+    .ide-wrapper pre { border-radius: 0; padding: 1rem 1.25rem; overflow-x: auto; margin: 0; border: none; background: transparent; }
+    .ide-wrapper pre code { padding: 0; background: transparent; font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace; font-size: 0.85rem; line-height: 1.7; }
     .ide-wrapper pre code.hljs { background: transparent; padding: 0; }
-
-    /* Blog image lightbox */
-    .blog-content img { cursor: zoom-in; border-radius: 0.5rem; transition: transform 0.2s ease, box-shadow 0.2s ease; }
-    .blog-content img:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
-    .lightbox-overlay {
-        position: fixed; inset: 0; z-index: 9999;
-        background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
-        display: flex; align-items: center; justify-content: center;
-        opacity: 0; visibility: hidden; transition: all 0.3s ease; cursor: zoom-out;
-    }
-    .lightbox-overlay.active { opacity: 1; visibility: visible; }
-    .lightbox-overlay img {
-        max-width: 92vw; max-height: 90vh; object-fit: contain;
-        border-radius: 0.75rem; box-shadow: 0 8px 40px rgba(0,0,0,0.5);
-        transform: scale(0.9); transition: transform 0.3s ease;
-    }
-    .lightbox-overlay.active img { transform: scale(1); }
-    .lightbox-close {
-        position: absolute; top: 1rem; right: 1rem;
-        width: 40px; height: 40px; border-radius: 50%;
-        background: rgba(255,255,255,0.15); border: none; color: #fff;
-        font-size: 1.25rem; cursor: pointer;
-        display: flex; align-items: center; justify-content: center; transition: background 0.2s;
-    }
-    .lightbox-close:hover { background: rgba(255,255,255,0.3); }
-
-    /* TOC styles */
-    .toc-nav ul { list-style: none; padding-left: 0; }
-    .toc-nav ul ul { padding-left: 0.75rem; }
-    .toc-nav li { margin-bottom: 0.125rem; }
-    .toc-nav a {
-        display: block; padding: 0.25rem 0.5rem; border-radius: 0.375rem;
-        color: #6b7280; text-decoration: none; transition: all 0.2s ease;
-        border-left: 2px solid transparent;
-    }
-    .toc-nav a:hover { color: #3b82f6; background: rgba(59,130,246,0.05); }
-    .toc-nav a.active { color: #3b82f6; border-left-color: #3b82f6; background: rgba(59,130,246,0.08); font-weight: 500; }
-    html.dark .toc-nav a { color: #9ca3af; }
-    html.dark .toc-nav a:hover { color: #60a5fa; background: rgba(96,165,250,0.05); }
-    html.dark .toc-nav a.active { color: #60a5fa; border-left-color: #60a5fa; background: rgba(96,165,250,0.08); }
 
     /* Mermaid diagram container */
     .mermaid-wrapper { margin: 1.5rem 0; border-radius: 0.75rem; overflow: hidden; border: 1px solid #e2e8f0; background: #ffffff; }
@@ -600,6 +497,7 @@
     html.dark .mermaid-label { color: #94a3b8; }
     .mermaid-body { padding: 1.5rem; display: flex; justify-content: center; overflow-x: auto; }
     .mermaid-body svg { max-width: 100%; height: auto; }
+    /* Mermaid dark mode text fix */
     html.dark .mermaid-body .nodeLabel, html.dark .mermaid-body .edgeLabel { color: #e5e7eb !important; }
     html.dark .mermaid-body .node rect, html.dark .mermaid-body .node polygon { fill: #1e293b !important; stroke: #475569 !important; }
 
@@ -615,28 +513,13 @@
     .excalidraw-body { padding: 1.5rem; display: flex; justify-content: center; overflow-x: auto; min-height: 400px; }
     .excalidraw-container { width: 100%; height: 100%; min-height: 400px; }
 
-    /* Animations */
-    @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-    .animate-fade-in { animation: fadeSlideIn 0.4s ease-out; }
-
-    /* Toast notification */
-    .gh-toast {
-        position: fixed; bottom: 24px; right: 24px; z-index: 9999;
-        display: flex; align-items: center; gap: 10px;
-        padding: 12px 20px; border-radius: 12px;
-        font-size: 14px; font-weight: 500;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-        transform: translateY(100px); opacity: 0;
-        transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); pointer-events: none;
-    }
-    .gh-toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
-    .gh-toast.success { background: #065f46; color: #d1fae5; border: 1px solid #059669; }
-
-    /* Project detail sidebar cards (for potential future use) */
-    .pd-sidebar-card { padding: 1rem; border-radius: 0.75rem; border: 1px solid #e5e7eb; background-color: #fafafa; }
-    html.dark .pd-sidebar-card { border-color: #374151; background-color: #1a1a1a; }
-    .pd-sidebar-icon { width: 1.75rem; height: 1.75rem; display: flex; align-items: center; justify-content: center; border-radius: 0.375rem; background-color: #e0f2fe; color: #0284c7; }
-    html.dark .pd-sidebar-icon { background-color: #0c4a6e; color: #38bdf8; }
+    /* Lightbox */
+    .lightbox-overlay { position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.3s ease; cursor: zoom-out; }
+    .lightbox-overlay.active { opacity: 1; visibility: visible; }
+    .lightbox-overlay img { max-width: 92vw; max-height: 90vh; object-fit: contain; border-radius: 0.75rem; box-shadow: 0 8px 40px rgba(0,0,0,0.5); transform: scale(0.9); transition: transform 0.3s ease; }
+    .lightbox-overlay.active img { transform: scale(1); }
+    .lightbox-close { position: absolute; top: 1rem; right: 1rem; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.15); border: none; color: #fff; font-size: 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+    .lightbox-close:hover { background: rgba(255,255,255,0.3); }
 
     /* Buttons */
     .pd-btn { display: inline-flex; align-items: center; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 600; transition: all 0.2s; }
@@ -648,6 +531,12 @@
     .pd-btn-secondary:hover { background-color: #f3f4f6; }
     html.dark .pd-btn-secondary { border-color: #4b5563; color: #d1d5db; }
     html.dark .pd-btn-secondary:hover { background-color: #1f2937; }
+
+    /* Sidebar cards */
+    .pd-sidebar-card { padding: 1rem; border-radius: 0.75rem; border: 1px solid #e5e7eb; background-color: #fafafa; }
+    html.dark .pd-sidebar-card { border-color: #374151; background-color: #1a1a1a; }
+    .pd-sidebar-icon { width: 1.75rem; height: 1.75rem; display: flex; align-items: center; justify-content: center; border-radius: 0.375rem; background-color: #e0f2fe; color: #0284c7; }
+    html.dark .pd-sidebar-icon { background-color: #0c4a6e; color: #38bdf8; }
 
     /* Store badges */
     .pd-store-badge { display: inline-flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1.5rem; border-radius: 0.75rem; border: 1px solid #374151; background-color: #111827; color: #ffffff; transition: all 0.2s; }
@@ -667,153 +556,40 @@
 </style>
 
 <script>
-// Text-to-Speech
 (function() {
-    const TTS = {
-        chunks: [], currentChunk: 0, totalWords: 0, spokenWords: 0,
-        playing: false, paused: false, utterance: null, voice: null,
-        lang: '{{ .Language.Lang }}' === 'fr' ? 'fr-FR' : 'en-US',
-        els: {
-            playIcon: () => document.getElementById('tts-play-icon'),
-            pauseIcon: () => document.getElementById('tts-pause-icon'),
-            stopBtn: () => document.getElementById('tts-stop'),
-            progress: () => document.getElementById('tts-progress'),
-            status: () => document.getElementById('tts-status'),
-            time: () => document.getElementById('tts-time'),
-            speed: () => document.getElementById('tts-speed')
-        },
-        getArticleText() {
-            const el = document.querySelector('.blog-content');
-            if (!el) return '';
-            const clone = el.cloneNode(true);
-            clone.querySelectorAll('pre, code, .footnotes').forEach(e => e.remove());
-            return clone.innerText.replace(/\n{3,}/g, '\n\n').trim();
-        },
-        splitIntoChunks(text) {
-            const maxLen = 800;
-            const sentences = text.match(/[^.!?…\n]+[.!?…\n]+|[^.!?…\n]+$/g) || [text];
-            const chunks = []; let current = '';
-            for (const sentence of sentences) {
-                if ((current + sentence).length > maxLen && current.length > 0) { chunks.push(current.trim()); current = sentence; }
-                else { current += sentence; }
-            }
-            if (current.trim()) chunks.push(current.trim());
-            return chunks;
-        },
-        findVoice() {
-            const voices = window.speechSynthesis.getVoices();
-            const prefix = this.lang.substring(0, 2);
-            let voice = voices.find(v => v.lang.startsWith(prefix) && v.name.toLowerCase().includes('natural'));
-            if (!voice) voice = voices.find(v => v.lang.startsWith(prefix) && v.name.toLowerCase().includes('enhanced'));
-            if (!voice) voice = voices.find(v => v.lang.startsWith(prefix) && !v.localService);
-            if (!voice) voice = voices.find(v => v.lang.startsWith(prefix));
-            return voice;
-        },
-        estimateTime(wordCount, rate) {
-            const wpm = 150 * rate; const mins = Math.ceil(wordCount / wpm);
-            return mins < 1 ? '< 1 min' : mins + ' min';
-        },
-        updateUI(state) {
-            const { playIcon, pauseIcon, stopBtn, status, time } = this.els;
-            const isActive = state === 'playing' || state === 'paused';
-            playIcon().classList.toggle('hidden', state === 'playing');
-            pauseIcon().classList.toggle('hidden', state !== 'playing');
-            stopBtn().classList.toggle('hidden', !isActive);
-            if (state === 'playing') {
-                const rate = parseFloat(this.els.speed().value);
-                status().textContent = '{{ .Language.Lang }}' === 'fr' ? 'Lecture en cours...' : 'Playing...';
-                time().textContent = this.estimateTime(this.totalWords - this.spokenWords, rate);
-            } else if (state === 'paused') {
-                status().textContent = '{{ .Language.Lang }}' === 'fr' ? 'En pause' : 'Paused';
-            } else {
-                status().textContent = document.getElementById('tts-status').dataset.default;
-                time().textContent = '';
-                this.els.progress().style.width = state === 'done' ? '100%' : '0%';
-            }
-        },
-        updateProgress() {
-            const pct = this.totalWords > 0 ? Math.min((this.spokenWords / this.totalWords) * 100, 100) : 0;
-            this.els.progress().style.width = pct + '%';
-        },
-        speakChunk(index) {
-            if (index >= this.chunks.length) {
-                this.playing = false; this.paused = false; this.updateUI('done');
-                setTimeout(() => this.updateUI('idle'), 3000); return;
-            }
-            this.currentChunk = index;
-            const text = this.chunks[index];
-            const wordsInChunk = text.split(/\s+/).length;
-            let wordsSpokenInChunk = 0;
-            this.utterance = new SpeechSynthesisUtterance(text);
-            this.utterance.lang = this.lang;
-            this.utterance.rate = parseFloat(this.els.speed().value);
-            if (this.voice) this.utterance.voice = this.voice;
-            this.utterance.onboundary = (e) => {
-                if (e.name === 'word') { wordsSpokenInChunk++; this.spokenWords++; this.updateProgress();
-                    const rate = parseFloat(this.els.speed().value);
-                    this.els.time().textContent = this.estimateTime(this.totalWords - this.spokenWords, rate);
-                }
-            };
-            this.utterance.onend = () => {
-                this.spokenWords += (wordsInChunk - wordsSpokenInChunk); this.updateProgress();
-                if (this.playing && !this.paused) this.speakChunk(index + 1);
-            };
-            this.utterance.onerror = (e) => {
-                if (e.error !== 'canceled' && e.error !== 'interrupted') { if (this.playing) this.speakChunk(index + 1); }
-            };
-            window.speechSynthesis.speak(this.utterance);
-        },
-        start() {
-            window.speechSynthesis.cancel();
-            const text = this.getArticleText(); if (!text) return;
-            this.voice = this.findVoice(); this.chunks = this.splitIntoChunks(text);
-            this.totalWords = text.split(/\s+/).length; this.spokenWords = 0;
-            this.currentChunk = 0; this.playing = true; this.paused = false;
-            this.updateUI('playing'); this.speakChunk(0);
-        },
-        toggle() {
-            if (this.playing && !this.paused) { window.speechSynthesis.pause(); this.paused = true; this.updateUI('paused'); return; }
-            if (this.paused) { window.speechSynthesis.resume(); this.paused = false; this.updateUI('playing'); return; }
-            this.start();
-        },
-        stop() {
-            window.speechSynthesis.cancel(); this.playing = false; this.paused = false;
-            this.chunks = []; this.spokenWords = 0; this.updateUI('idle');
-        },
-        setSpeed(val) {
-            if (!this.playing) return;
-            window.speechSynthesis.cancel(); this.paused = false; this.speakChunk(this.currentChunk);
-        }
-    };
-    if (window.speechSynthesis) {
-        window.speechSynthesis.getVoices();
-        window.speechSynthesis.onvoiceschanged = () => { TTS.voice = TTS.findVoice(); };
-    }
     document.addEventListener('DOMContentLoaded', function() {
-        const text = TTS.getArticleText();
-        if (text) { const words = text.split(/\s+/).length; const timeEl = TTS.els.time(); if (timeEl) timeEl.textContent = '~' + TTS.estimateTime(words, 1); }
-    });
-    window.toggleTTS = () => TTS.toggle();
-    window.stopTTS = () => TTS.stop();
-    window.setTTSSpeed = (val) => TTS.setSpeed(val);
-    window.seekTTS = () => {};
-})();
+        // Initialize Mermaid
+        var isDark = document.documentElement.classList.contains('dark');
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: isDark ? 'dark' : 'default',
+            securityLevel: 'loose',
+            flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' },
+            fontFamily: 'Inter, system-ui, sans-serif'
+        });
 
-// Code blocks: Terminal for shell, IDE for everything else
-(function() {
-    document.addEventListener('DOMContentLoaded', function() {
+        // Highlight.js theme sync
+        function syncHljsTheme() {
+            var dark = document.documentElement.classList.contains('dark');
+            var darkSheet = document.getElementById('hljs-dark-theme-pd');
+            var lightSheet = document.getElementById('hljs-light-theme-pd');
+            if (darkSheet) darkSheet.disabled = !dark;
+            if (lightSheet) lightSheet.disabled = dark;
+        }
+        syncHljsTheme();
+        new MutationObserver(function(mutations) {
+            mutations.forEach(function(m) { if (m.attributeName === 'class') syncHljsTheme(); });
+        }).observe(document.documentElement, { attributes: true });
+
         // Lightbox
         var lb = document.createElement('div');
         lb.className = 'lightbox-overlay';
         lb.innerHTML = '<button class="lightbox-close" aria-label="Close">&times;</button><img src="" alt="">';
         document.body.appendChild(lb);
         var lbImg = lb.querySelector('img');
-        var lbClose = lb.querySelector('.lightbox-close');
-        function closeLightbox() { lb.classList.remove('active'); }
-        lb.addEventListener('click', function(e) { if (e.target === lb) closeLightbox(); });
-        lbClose.addEventListener('click', closeLightbox);
-        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLightbox(); });
-
+        lb.addEventListener('click', function(e) { if (e.target === lb) lb.classList.remove('active'); });
+        lb.querySelector('.lightbox-close').addEventListener('click', function() { lb.classList.remove('active'); });
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') lb.classList.remove('active'); });
         var blogContent = document.querySelector('.blog-content');
         if (blogContent) {
             blogContent.querySelectorAll('img').forEach(function(img) {
@@ -821,20 +597,7 @@
             });
         }
 
-        // Highlight.js theme sync with dark mode
-        function syncHljsTheme() {
-            var isDark = document.documentElement.classList.contains('dark');
-            var darkSheet = document.getElementById('hljs-dark-theme');
-            var lightSheet = document.getElementById('hljs-light-theme');
-            if (darkSheet) darkSheet.disabled = !isDark;
-            if (lightSheet) lightSheet.disabled = isDark;
-        }
-        syncHljsTheme();
-        new MutationObserver(function(mutations) {
-            mutations.forEach(function(m) { if (m.attributeName === 'class') syncHljsTheme(); });
-        }).observe(document.documentElement, { attributes: true });
-
-        // Icons & helpers
+        // Icons
         var copyIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
         var checkIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
 
@@ -853,18 +616,6 @@
             'bash': 'Bash', 'zsh': 'Zsh', 'sh': 'Shell'
         };
 
-        // Initialize Mermaid
-        var isDarkMode = document.documentElement.classList.contains('dark');
-        if (window.mermaid) {
-            mermaid.initialize({
-                startOnLoad: false,
-                theme: isDarkMode ? 'dark' : 'default',
-                securityLevel: 'loose',
-                flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' },
-                fontFamily: 'Inter, system-ui, sans-serif'
-            });
-        }
-
         var mermaidId = 0;
         var allPres = document.querySelectorAll('.blog-content pre');
         for (var k = 0; k < allPres.length; k++) {
@@ -874,39 +625,41 @@
                     var code = pre.querySelector('code');
                     var lang = '';
                     if (code && code.className) {
-                        var m = code.className.match(/language-(\w+)/);
+                        var m = code.className.match(/language-(\w+)/i);
                         if (m) lang = m[1].toLowerCase();
                     }
+
                     // MERMAID DIAGRAMS
                     if (lang === 'mermaid') {
                         var mermaidSource = code ? code.textContent : pre.textContent;
-                        var mWrapper = document.createElement('div');
-                        mWrapper.className = 'mermaid-wrapper';
-                        var mHeader = document.createElement('div');
-                        mHeader.className = 'mermaid-header';
-                        var mHeaderLeft = document.createElement('div');
-                        mHeaderLeft.className = 'mermaid-header-left';
-                        var mIcon = document.createElement('span');
-                        mIcon.className = 'mermaid-icon';
-                        mIcon.textContent = '◇';
-                        var mLabel = document.createElement('span');
-                        mLabel.className = 'mermaid-label';
-                        mLabel.textContent = 'Architecture';
-                        mHeaderLeft.appendChild(mIcon);
-                        mHeaderLeft.appendChild(mLabel);
-                        mHeader.appendChild(mHeaderLeft);
-                        var mBody = document.createElement('div');
-                        mBody.className = 'mermaid-body';
-                        var mDiv = document.createElement('div');
-                        mDiv.className = 'mermaid';
-                        mDiv.id = 'mermaid-' + (mermaidId++);
-                        mDiv.textContent = mermaidSource;
-                        mBody.appendChild(mDiv);
-                        mWrapper.appendChild(mHeader);
-                        mWrapper.appendChild(mBody);
-                        pre.parentNode.insertBefore(mWrapper, pre);
+                        var wrapper = document.createElement('div');
+                        wrapper.className = 'mermaid-wrapper';
+                        var header = document.createElement('div');
+                        header.className = 'mermaid-header';
+                        var headerLeft = document.createElement('div');
+                        headerLeft.className = 'mermaid-header-left';
+                        var icon = document.createElement('span');
+                        icon.className = 'mermaid-icon';
+                        icon.textContent = '◇';
+                        var label = document.createElement('span');
+                        label.className = 'mermaid-label';
+                        label.textContent = 'Architecture';
+                        headerLeft.appendChild(icon);
+                        headerLeft.appendChild(label);
+                        header.appendChild(headerLeft);
+                        var body = document.createElement('div');
+                        body.className = 'mermaid-body';
+                        var mermaidDiv = document.createElement('div');
+                        mermaidDiv.className = 'mermaid';
+                        mermaidDiv.id = 'mermaid-' + (mermaidId++);
+                        mermaidDiv.textContent = mermaidSource;
+                        body.appendChild(mermaidDiv);
+                        wrapper.appendChild(header);
+                        wrapper.appendChild(body);
+                        pre.parentNode.insertBefore(wrapper, pre);
                         pre.style.display = 'none';
-                        try { mermaid.run({ nodes: [mDiv] }); } catch(e) { console.warn('Mermaid render error:', e); }
+                        // Render mermaid
+                        try { mermaid.run({ nodes: [mermaidDiv] }); } catch(e) { console.warn('Mermaid render error:', e); }
                         return;
                     }
 
@@ -960,9 +713,42 @@
                         return;
                     }
 
-                    // === IDE STYLE FOR ALL CODE BLOCKS ===
-                    {
-                        // Always use IDE style (even for shell commands)
+                    var isShell = SHELL_LANGS.test(lang || 'shell');
+
+                    if (isShell) {
+                        // TERMINAL STYLE
+                        var wrapper = document.createElement('div');
+                        wrapper.className = 'terminal-wrapper';
+                        var header = document.createElement('div');
+                        header.className = 'terminal-header';
+                        var dots = document.createElement('div');
+                        dots.className = 'terminal-dots';
+                        dots.innerHTML = '<span></span><span></span><span></span>';
+                        var langLabel = document.createElement('span');
+                        langLabel.className = 'terminal-lang';
+                        langLabel.textContent = 'zsh';
+                        var copyBtn = document.createElement('button');
+                        copyBtn.type = 'button';
+                        copyBtn.className = 'terminal-copy';
+                        copyBtn.innerHTML = copyIcon + '<span>Copier</span>';
+                        copyBtn.addEventListener('click', function() {
+                            var text = code ? code.textContent : pre.textContent;
+                            text = text.replace(/^[\$~]+\s*/gm, '').trim();
+                            navigator.clipboard.writeText(text).then(function() {
+                                copyBtn.classList.add('copied');
+                                copyBtn.innerHTML = checkIcon + '<span>Copié !</span>';
+                                setTimeout(function() { copyBtn.classList.remove('copied'); copyBtn.innerHTML = copyIcon + '<span>Copier</span>'; }, 2000);
+                            });
+                        });
+                        header.appendChild(dots);
+                        header.appendChild(langLabel);
+                        header.appendChild(copyBtn);
+                        wrapper.appendChild(header);
+                        pre.parentNode.insertBefore(wrapper, pre);
+                        wrapper.appendChild(pre);
+                        if (code) colorizeShell(code);
+                    } else {
+                        // IDE STYLE
                         var displayLang = lang ? (LANG_LABELS[lang] || lang) : 'Text';
                         var wrapper = document.createElement('div');
                         wrapper.className = 'ide-wrapper';
@@ -995,16 +781,13 @@
                         wrapper.appendChild(header);
                         pre.parentNode.insertBefore(wrapper, pre);
                         wrapper.appendChild(pre);
-
-                        // Apply highlight.js for syntax coloring
+                        // Apply highlight.js
                         if (code && window.hljs) {
-                            if (lang && lang !== 'text') {
-                                code.classList.add('language-' + lang);
-                            }
+                            if (lang && lang !== 'text') code.classList.add('language-' + lang);
                             try { window.hljs.highlightElement(code); } catch(e) {}
                         }
                     }
-                } catch(e) { /* skip on error */ }
+                } catch(e) {}
             })(allPres[k]);
         }
 
@@ -1023,17 +806,12 @@
                     var prompt = esc(promptMatch[2]);
                     var rest = line.substring(promptMatch[0].length);
                     result.push(before + '<span class="sh-prompt">' + prompt + '</span>' + colorizeTokens(rest));
-                } else {
-                    result.push(colorizeTokens(line));
-                }
+                } else { result.push(colorizeTokens(line)); }
             }
             codeEl.innerHTML = result.join('\n');
         }
-
         function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-        var CMD_SET = ['sudo','apt-get','apt','install','update','chsh','echo','sh','curl','wget','git','zsh','mkdir','cd','ls','cat','cp','mv','rm','chmod','chown','systemctl','service','nano','vim','source','which','dpkg','pip','npm','yarn','make','grep','sed','awk','find','tar','unzip','ssh','scp','docker','build','run','certbot','openssl','keytool','nginx','systemctl','journalctl','crontab'];
-
+        var CMD_SET = ['sudo','apt-get','apt','install','update','chsh','echo','sh','curl','wget','git','zsh','mkdir','cd','ls','cat','cp','mv','rm','chmod','chown','systemctl','service','nano','vim','source','which','dpkg','pip','npm','yarn','make','grep','sed','awk','find','tar','unzip','ssh','scp','docker','build','run','certbot','openssl','keytool','nginx','journalctl','crontab'];
         function colorizeTokens(str) {
             var tokens = str.match(/("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|\$\([^)]*\)|\$\w+|https?:\/\/\S+|\||\S+|\s+)/g);
             if (!tokens) return esc(str);
@@ -1049,8 +827,7 @@
                 if (/^-{1,2}\w/.test(t)) { out.push('<span class="sh-flag">' + esc(t) + '</span>'); continue; }
                 if (CMD_SET.indexOf(t.toLowerCase()) !== -1) {
                     var cls = (t.toLowerCase() === 'sudo') ? 'sh-sudo' : 'sh-command';
-                    out.push('<span class="' + cls + '">' + esc(t) + '</span>');
-                    continue;
+                    out.push('<span class="' + cls + '">' + esc(t) + '</span>'); continue;
                 }
                 out.push(esc(t));
             }
@@ -1097,9 +874,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Enhanced TOC active state tracking
+// Enhanced TOC active state tracking for project detail
 document.addEventListener('DOMContentLoaded', function() {
-    const tocNav = document.querySelector('#toc-nav');
+    const tocNav = document.querySelector('#toc-nav-pd');
     const tocLinks = document.querySelectorAll('.toc-nav a');
     if (tocLinks.length === 0) return;
 
@@ -1171,41 +948,6 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('scroll', onScroll, { passive: true });
     updateActive();
 });
-
-// Giscus GitHub connection detection
-(function() {
-    let ghConnected = false;
-    function showGhToast(message) {
-        const toast = document.createElement('div');
-        toast.className = 'gh-toast success';
-        toast.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>' + message;
-        document.body.appendChild(toast);
-        requestAnimationFrame(() => { requestAnimationFrame(() => { toast.classList.add('show'); }); });
-        setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 500); }, 4000);
-    }
-    function onGhConnected() {
-        if (ghConnected) return; ghConnected = true;
-        const prompt = document.getElementById('gh-login-prompt');
-        const alert = document.getElementById('gh-connected-alert');
-        if (prompt) prompt.classList.add('hidden');
-        if (alert) alert.classList.remove('hidden');
-        showGhToast('{{ T "ghToastConnected" | default "Connexion GitHub réussie !" }}');
-        setTimeout(() => { if (alert) alert.classList.add('hidden'); }, 8000);
-    }
-    window.addEventListener('message', function(event) {
-        if (event.origin !== 'https://giscus.app') return;
-        try {
-            const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
-            if (data && data.giscus && data.giscus.discussion) onGhConnected();
-        } catch(e) {}
-    });
-    let checkCount = 0;
-    const checkInterval = setInterval(function() {
-        checkCount++;
-        if (checkCount > 30 || ghConnected) { clearInterval(checkInterval); return; }
-        const iframe = document.querySelector('iframe.giscus-frame');
-        if (!iframe) return;
-    }, 2000);
-})();
 </script>
+{{ end }}
 {{ end }}
