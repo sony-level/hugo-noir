@@ -1,0 +1,84 @@
+{{ define "main" }}
+<!-- prettier-ignore -->
+<div class="max-w-4xl mx-auto px-4 py-24 flex flex-col items-center justify-center text-center min-h-[60vh]">
+  <div class="error-404-number mb-6">404</div>
+  <p class="error-404-title text-xl md:text-2xl font-semibold mb-3">{{ T "pageNotFound" | default "Page not found" }}</p>
+  <p class="error-404-desc text-base mb-6 max-w-lg">{{ T "pageNotFoundDesc" | default "Page not found or link broken." }}</p>
+  <ul class="error-404-suggestions text-sm mb-10 max-w-sm text-left space-y-2">
+    <li class="flex items-start gap-2"><span class="mt-0.5 text-sky-500">•</span><span>{{ T "checkUrl" | default "Check the URL for typos" }}</span></li>
+    <li class="flex items-start gap-2"><span class="mt-0.5 text-sky-500">•</span><span>{{ T "pageRemoved" | default "The page may have been removed" }}</span></li>
+    <li class="flex items-start gap-2"><span class="mt-0.5 text-sky-500">•</span><span>{{ T "linkBroken" | default "The link may be outdated" }}</span></li>
+    <li class="flex items-start gap-2"><span class="mt-0.5 text-sky-500">•</span><span>{{ T "resourceMissing" | default "The resource no longer exists" }}</span></li>
+  </ul>
+  <div class="flex flex-wrap gap-4 justify-center">
+    <a href="{{ .Site.Home.RelPermalink }}" class="error-404-btn inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all duration-200">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
+      {{ T "backHome" | default "Back to Home" }}
+    </a>
+    <a href="javascript:history.back()" class="error-404-btn-secondary inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all duration-200">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"/></svg>
+      {{ T "goBack" | default "Go Back" }}
+    </a>
+  </div>
+</div>
+<style>
+  .error-404-number {
+    font-size: 8rem;
+    font-weight: 800;
+    line-height: 1;
+    color: #1f2937;
+    letter-spacing: -0.04em;
+  }
+  html.dark .error-404-number {
+    color: #f3f4f6;
+  }
+  .error-404-title {
+    color: #1f2937;
+  }
+  html.dark .error-404-title {
+    color: #f3f4f6;
+  }
+  .error-404-desc {
+    color: #6b7280;
+  }
+  html.dark .error-404-desc {
+    color: #9ca3af;
+  }
+  .error-404-suggestions {
+    color: #6b7280;
+  }
+  html.dark .error-404-suggestions {
+    color: #9ca3af;
+  }
+  .error-404-btn {
+    background-color: #0284c7;
+    color: #ffffff;
+  }
+  .error-404-btn:hover {
+    background-color: #0369a1;
+  }
+  html.dark .error-404-btn {
+    background-color: #0ea5e9;
+  }
+  html.dark .error-404-btn:hover {
+    background-color: #0284c7;
+  }
+  .error-404-btn-secondary {
+    border: 1px solid #0284c7;
+    color: #0284c7;
+    background-color: transparent;
+  }
+  .error-404-btn-secondary:hover {
+    background-color: #0284c7;
+    color: #ffffff;
+  }
+  html.dark .error-404-btn-secondary {
+    border-color: #0ea5e9;
+    color: #0ea5e9;
+  }
+  html.dark .error-404-btn-secondary:hover {
+    background-color: #0ea5e9;
+    color: #ffffff;
+  }
+</style>
+{{ end }}
