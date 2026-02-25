@@ -22,6 +22,24 @@ other = "Blogs"
 [viewAll]
 other = "View All"
 
+[viewDetails]
+other = "View Details"
+
+[viewCV]
+other = "View CV"
+
+[close]
+other = "Close"
+
+[cvComingSoon]
+other = "CV Coming Soon"
+
+[cvMessage]
+other = "My updated CV will be available soon."
+
+[cvCheckBack]
+other = "Check back soon to view it!"
+
 [localTimeLabel]
 other = "Local Time:"
 
