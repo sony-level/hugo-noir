@@ -64,3 +64,14 @@ html.dark .blog-content img {
     -webkit-box-reflect: below 5px
         linear-gradient(transparent 70%, rgba(0, 0, 0, 0.14));
 }
+
+/* ── Link preview card images : no oval / no reflection ─────────────────── */
+.link-preview-card img {
+    margin: 0 !important;
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    -webkit-box-reflect: none !important;
+    transform: none !important;
+    transition: none !important;
+}

@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between mb-3">
         <h1 class="text-5xl font-bold text-text-primary-light dark:text-text-primary-dark">{{ .Title }}</h1>
         <!-- View CV Button -->
-        <button type="button" onclick="showCVModal()" class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-accent-light to-blue-600 dark:from-accent-dark dark:to-blue-500 text-white text-sm font-medium rounded-lg hover:shadow-lg transition-all duration-200 hover:scale-105">
+        <button type="button" onclick="showCVModal()" class="inline-flex items-center gap-2 px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white text-sm font-medium rounded-lg shadow hover:shadow-lg transition-all duration-200 hover:scale-105">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -18,11 +18,11 @@
             </div>
             <div class="mt-8 text-sl flex flex-wrap gap-4">
                 <div class="stat-box">
-                    <div class="stat-number">20+</div>
+                    <div class="stat-number">9+</div>
                     <div class="stat-label">Technologies Used</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-number">10+</div>
+                    <div class="stat-number">5+</div>
                     <div class="stat-label">Projects Completed</div>
                 </div>
                 <div class="stat-box">
@@ -30,7 +30,7 @@
                     <div class="stat-label">Recommendations Received</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-number">10+</div>
+                    <div class="stat-number">5+</div>
                     <div class="stat-label">Courses Completed</div>
                 </div>
 
@@ -253,58 +253,41 @@
 </style>
 
 <!-- CV Modal -->
-<div id="cvModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center p-4" onclick="closeCVModal(event)">
-    <div class="bg-bg-primary-light dark:bg-bg-secondary-dark rounded-lg max-w-2xl w-full p-8 relative" onclick="event.stopPropagation()">
-        <!-- Close button -->
-        <button type="button" onclick="closeCVModal()" class="absolute top-4 right-4 text-text-secondary-light dark:text-text-secondary-dark hover:text-accent-light dark:hover:text-accent-dark transition-colors" aria-label="Close modal">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-        </button>
+<div id="cvModal" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden flex items-center justify-center p-4" onclick="closeCVModal(event)">
+    <div class="relative bg-bg-primary-light dark:bg-bg-secondary-dark rounded-xl w-full max-w-5xl flex flex-col shadow-2xl" style="height:90vh" onclick="event.stopPropagation()">
 
-        <!-- Modal content -->
-        <div class="text-center">
-            <div class="mb-6">
-                <svg class="w-16 h-16 mx-auto text-accent-light dark:text-accent-dark mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        <!-- Header bar -->
+        <div class="flex items-center justify-between px-5 py-3 border-b border-border-primary-light dark:border-border-primary-dark shrink-0 rounded-t-xl">
+            <span class="text-sm font-semibold text-text-primary-light dark:text-text-primary-dark">
+                Curriculum Vitae — Level Sony
+            </span>
+            <button type="button" onclick="closeCVModal()"
+                    class="p-1.5 rounded-lg text-text-secondary-light dark:text-text-secondary-dark hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    aria-label="Close">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
-                <h2 class="text-3xl font-bold text-text-primary-light dark:text-text-primary-dark mb-3">
-                    {{ T "cvComingSoon" | default "CV à venir" }}
-                </h2>
-                <p class="text-lg text-text-secondary-light dark:text-text-secondary-dark mb-4">
-                    {{ T "cvMessage" | default "Mon CV mis à jour sera bientôt disponible." }}
-                </p>
-                <p class="text-base text-text-secondary-light dark:text-text-secondary-dark">
-                    {{ T "cvCheckBack" | default "Revenez prochainement pour le consulter !" }}
-                </p>
-            </div>
-
-            <div class="flex gap-3 justify-center mt-8">
-                <button type="button" onclick="closeCVModal()" class="px-6 py-2 bg-accent-light dark:bg-accent-dark text-white rounded-lg hover:shadow-lg transition-all duration-200">
-                    {{ T "close" | default "Fermer" }}
-                </button>
-            </div>
+            </button>
         </div>
+
+        <!-- PDF viewer -->
+        <iframe id="cvFrame" title="CV" class="flex-1 w-full rounded-b-xl" style="border:none;"></iframe>
     </div>
 </div>
 
 <script>
-function showCVModal() {
-    // Check if CV exists (you can modify this URL when CV is available)
-    const cvUrl = '/cv.pdf'; // Change this to your actual CV path
-    const cvExists = true; // Set to true when CV is available
+const CV_URL = '{{ if eq .Language.Lang "fr" }}/cv/Cv_fr.pdf{{ else }}/cv/Cv_en.pdf{{ end }}';
+let cvLoaded = false;
 
-    if (cvExists) {
-        // Open CV in new tab if it exists
-        window.open(cvUrl, '_blank');
-    } else {
-        // Show modal if CV doesn't exist
-        const modal = document.getElementById('cvModal');
-        if (modal) {
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
+function showCVModal() {
+    const modal = document.getElementById('cvModal');
+    const frame = document.getElementById('cvFrame');
+    if (!cvLoaded) {
+        frame.src = CV_URL;
+        cvLoaded = true;
     }
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
 }
 
 function closeCVModal(event) {
@@ -315,11 +298,8 @@ function closeCVModal(event) {
     }
 }
 
-// Close modal on ESC key
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        closeCVModal();
-    }
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeCVModal();
 });
 </script>
 
