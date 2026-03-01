@@ -53,6 +53,9 @@
     </a>
     {{ end }}
   </div>
+
+  <!-- Pagination -->
+  <div id="blog-pagination"></div>
 </div>
 
 <style>
@@ -64,30 +67,80 @@
   html.dark .blog-cat-tab.active { background: #3b82f6; color: #fff; }
   .blog-cat-tab:hover:not(.active) { background: rgba(59,130,246,0.15); color: #2563eb; }
   html.dark .blog-cat-tab:hover:not(.active) { background: rgba(59,130,246,0.2); color: #60a5fa; }
+
+  /* Pagination */
+  .pag-btn { display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 36px; padding: 0 8px; border-radius: 8px; font-size: 14px; font-weight: 500; background: rgba(107,114,128,0.1); color: #6b7280; border: 1px solid rgba(107,114,128,0.2); transition: all 0.15s; cursor: pointer; }
+  .pag-btn:hover:not(:disabled) { background: rgba(59,130,246,0.15); color: #2563eb; border-color: rgba(59,130,246,0.3); }
+  .pag-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .pag-btn.pag-active { background: #2563eb; color: #fff; border-color: #2563eb; }
+  html.dark .pag-btn { background: rgba(107,114,128,0.2); color: #9ca3af; border-color: rgba(107,114,128,0.3); }
+  html.dark .pag-btn:hover:not(:disabled) { background: rgba(59,130,246,0.2); color: #60a5fa; border-color: rgba(59,130,246,0.4); }
+  html.dark .pag-btn.pag-active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   var tabs = document.querySelectorAll('.blog-cat-tab');
-  var cards = document.querySelectorAll('.blog-card');
+  var cards = Array.from(document.querySelectorAll('.blog-card'));
   var countEl = document.getElementById('blog-count');
+  var pagNav = document.getElementById('blog-pagination');
+  var ITEMS_PER_PAGE = 9;
+  var currentPage = 1;
+  var currentCat = 'all';
+
+  function getFiltered() {
+    return cards.filter(function(c) {
+      return currentCat === 'all' || c.getAttribute('data-category') === currentCat;
+    });
+  }
+
+  function renderPage() {
+    var filtered = getFiltered();
+    var totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
+    if (currentPage > totalPages) currentPage = totalPages;
+    var start = (currentPage - 1) * ITEMS_PER_PAGE;
+    var end = start + ITEMS_PER_PAGE;
+    cards.forEach(function(c) { c.style.display = 'none'; });
+    filtered.slice(start, end).forEach(function(c) { c.style.display = ''; });
+    if (countEl) countEl.textContent = filtered.length;
+    renderPagination(totalPages);
+  }
+
+  function renderPagination(totalPages) {
+    if (!pagNav) return;
+    if (totalPages <= 1) { pagNav.innerHTML = ''; return; }
+    var html = '<div class="flex items-center justify-center gap-2 mt-10">';
+    html += '<button onclick="blogGoTo(' + (currentPage - 1) + ')" class="pag-btn"' + (currentPage <= 1 ? ' disabled' : '') + '>';
+    html += '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg></button>';
+    for (var i = 1; i <= totalPages; i++) {
+      html += '<button onclick="blogGoTo(' + i + ')" class="pag-btn' + (i === currentPage ? ' pag-active' : '') + '">' + i + '</button>';
+    }
+    html += '<button onclick="blogGoTo(' + (currentPage + 1) + ')" class="pag-btn"' + (currentPage >= totalPages ? ' disabled' : '') + '>';
+    html += '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></button>';
+    html += '</div>';
+    pagNav.innerHTML = html;
+  }
+
+  window.blogGoTo = function(page) {
+    var filtered = getFiltered();
+    var totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
+    if (page < 1 || page > totalPages) return;
+    currentPage = page;
+    renderPage();
+    document.getElementById('blog-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   tabs.forEach(function(tab) {
     tab.addEventListener('click', function() {
       tabs.forEach(function(t) { t.classList.remove('active'); });
       tab.classList.add('active');
-      var cat = tab.getAttribute('data-category');
-      var visible = 0;
-      cards.forEach(function(card) {
-        if (cat === 'all' || card.getAttribute('data-category') === cat) {
-          card.style.display = '';
-          visible++;
-        } else {
-          card.style.display = 'none';
-        }
-      });
-      if (countEl) countEl.textContent = visible;
+      currentCat = tab.getAttribute('data-category');
+      currentPage = 1;
+      renderPage();
     });
   });
+
+  renderPage();
 });
 </script>
 {{ end }}

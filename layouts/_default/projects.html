@@ -115,6 +115,9 @@
     {{ end }}
   </div>
 
+  <!-- Pagination -->
+  <div id="proj-pagination"></div>
+
   <!-- Empty state -->
   <div id="no-projects" class="hidden text-center py-16">
     <p class="text-text-secondary-light dark:text-text-secondary-dark text-lg">
@@ -202,43 +205,84 @@
   .project-item.hidden-card {
     display: none;
   }
+
+  /* Pagination */
+  .pag-btn { display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 36px; padding: 0 8px; border-radius: 8px; font-size: 14px; font-weight: 500; background: rgba(107,114,128,0.1); color: #6b7280; border: 1px solid rgba(107,114,128,0.2); transition: all 0.15s; cursor: pointer; }
+  .pag-btn:hover:not(:disabled) { background: rgba(59,130,246,0.15); color: #2563eb; border-color: rgba(59,130,246,0.3); }
+  .pag-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .pag-btn.pag-active { background: #2563eb; color: #fff; border-color: #2563eb; }
+  html.dark .pag-btn { background: rgba(107,114,128,0.2); color: #9ca3af; border-color: rgba(107,114,128,0.3); }
+  html.dark .pag-btn:hover:not(:disabled) { background: rgba(59,130,246,0.2); color: #60a5fa; border-color: rgba(59,130,246,0.4); }
+  html.dark .pag-btn.pag-active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const tabs = document.querySelectorAll('.cat-tab');
-  const items = document.querySelectorAll('.project-item');
-  const emptyState = document.getElementById('no-projects');
+  var tabs = document.querySelectorAll('.cat-tab');
+  var items = Array.from(document.querySelectorAll('.project-item'));
+  var emptyState = document.getElementById('no-projects');
+  var pagNav = document.getElementById('proj-pagination');
+  var ITEMS_PER_PAGE = 9;
+  var currentPage = 1;
+  var currentCat = 'all';
 
-  function filterCategory(cat) {
-    let visibleCount = 0;
-    items.forEach(function(item) {
-      if (cat === 'all' || item.getAttribute('data-category') === cat) {
-        item.classList.remove('hidden-card');
-        visibleCount++;
-      } else {
-        item.classList.add('hidden-card');
-      }
+  function getFiltered() {
+    return items.filter(function(item) {
+      return currentCat === 'all' || item.getAttribute('data-category') === currentCat;
     });
-    if (visibleCount === 0) {
+  }
+
+  function renderPage() {
+    var filtered = getFiltered();
+    var totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
+    if (currentPage > totalPages) currentPage = totalPages;
+    var start = (currentPage - 1) * ITEMS_PER_PAGE;
+    var end = start + ITEMS_PER_PAGE;
+    items.forEach(function(item) { item.classList.add('hidden-card'); });
+    filtered.slice(start, end).forEach(function(item) { item.classList.remove('hidden-card'); });
+    if (filtered.length === 0) {
       emptyState.classList.remove('hidden');
     } else {
       emptyState.classList.add('hidden');
     }
-    tabs.forEach(function(t) {
-      if (t.getAttribute('data-category') === cat) {
-        t.classList.add('active-tab');
-      } else {
-        t.classList.remove('active-tab');
-      }
-    });
+    renderPagination(totalPages, filtered.length);
   }
+
+  function renderPagination(totalPages, total) {
+    if (!pagNav) return;
+    if (totalPages <= 1) { pagNav.innerHTML = ''; return; }
+    var html = '<div class="flex items-center justify-center gap-2 mt-10">';
+    html += '<button onclick="projGoTo(' + (currentPage - 1) + ')" class="pag-btn"' + (currentPage <= 1 ? ' disabled' : '') + '>';
+    html += '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg></button>';
+    for (var i = 1; i <= totalPages; i++) {
+      html += '<button onclick="projGoTo(' + i + ')" class="pag-btn' + (i === currentPage ? ' pag-active' : '') + '">' + i + '</button>';
+    }
+    html += '<button onclick="projGoTo(' + (currentPage + 1) + ')" class="pag-btn"' + (currentPage >= totalPages ? ' disabled' : '') + '>';
+    html += '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></button>';
+    html += '</div>';
+    pagNav.innerHTML = html;
+  }
+
+  window.projGoTo = function(page) {
+    var filtered = getFiltered();
+    var totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
+    if (page < 1 || page > totalPages) return;
+    currentPage = page;
+    renderPage();
+    document.getElementById('projects-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   tabs.forEach(function(tab) {
     tab.addEventListener('click', function() {
-      filterCategory(this.getAttribute('data-category'));
+      tabs.forEach(function(t) { t.classList.remove('active-tab'); });
+      tab.classList.add('active-tab');
+      currentCat = tab.getAttribute('data-category');
+      currentPage = 1;
+      renderPage();
     });
   });
+
+  renderPage();
 });
 </script>
 {{ end }}
