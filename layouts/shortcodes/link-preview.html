@@ -9,10 +9,10 @@
      author="Author Name"
    >}}
 */}}
-{{ $url   := .Get "url" }}
+{{ $url   := .Get "url"   | strings.TrimPrefix "<" | strings.TrimSuffix ">" }}
 {{ $title := .Get "title" }}
 {{ $desc  := .Get "description" }}
-{{ $img   := .Get "image" }}
+{{ $img   := .Get "image" | strings.TrimPrefix "<" | strings.TrimSuffix ">" }}
 {{ $site  := .Get "site" | default "" }}
 {{ $author := .Get "author" | default "" }}
 
