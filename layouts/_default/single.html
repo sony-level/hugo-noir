@@ -290,6 +290,28 @@
             </div>
         </aside>
     </div>
+
+    <!-- AI Summary — one line below comments -->
+    {{ $aiURL := .Permalink }}
+    {{ $aiLang := .Language.Lang }}
+    {{ $aiPrompt := "" }}
+    {{ if eq $aiLang "fr" }}{{ $aiPrompt = printf "Résume cet article en français : %s" $aiURL }}{{ else }}{{ $aiPrompt = printf "Summarize this article in English: %s" $aiURL }}{{ end }}
+    {{ $aiEncoded := $aiPrompt | urlquery }}
+    <div class="mt-6 px-4 flex flex-wrap items-center gap-4 text-sm text-text-secondary-light dark:text-text-secondary-dark">
+        <span class="font-medium">{{ if eq $aiLang "fr" }}Résumer avec l'IA :{{ else }}Summarize with AI:{{ end }}</span>
+        <a href="https://chatgpt.com/?q={{ $aiEncoded }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 font-medium hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 19.9a6.051 6.051 0 0 0 5.772-4.206 5.988 5.988 0 0 0 3.997-2.9 6.046 6.046 0 0 0-.747-7.073zm-5.731 6.124a4.56 4.56 0 0 1-1.19-.156l.782-1.354a2.74 2.74 0 0 0 .935.163 2.773 2.773 0 0 0 2.773-2.774V9.834a2.773 2.773 0 0 0-2.773-2.773h-.012a2.773 2.773 0 0 0-2.772 2.773v1.553l-1.554-.898V9.834a4.327 4.327 0 0 1 4.327-4.327h.012a4.327 4.327 0 0 1 4.327 4.327v2.09a4.326 4.326 0 0 1-4.855 4.22zm-6.39-3.64a2.773 2.773 0 0 0 2.773 2.774h.012a2.773 2.773 0 0 0 2.773-2.773v-1.553l1.554.898v.655a4.327 4.327 0 0 1-4.327 4.327h-.012a4.327 4.327 0 0 1-4.327-4.327V9.834a4.327 4.327 0 0 1 4.855-4.22 4.56 4.56 0 0 1 1.19.156l-.782 1.354a2.74 2.74 0 0 0-.935-.163 2.773 2.773 0 0 0-2.773 2.773z"/></svg>
+            ChatGPT
+        </a>
+        <a href="https://claude.ai/new?q={{ $aiEncoded }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 font-medium hover:text-orange-500 dark:hover:text-orange-400 transition-colors">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.304 3H6.696L2 12l4.696 9h10.608L24 12zM12 16.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9zm0-2a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg>
+            Claude
+        </a>
+        <a href="https://www.perplexity.ai/?q={{ $aiEncoded }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 font-medium hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M20.572 3.428L15.5 8.5H22v7h-6.5l5.072 5.072-1.415 1.414L14 16.415V22h-4v-5.585l-5.157 5.657-1.414-1.415L8.5 15.5H2v-7h6.5L3.428 3.428 4.843 2.014 12 9.172l7.157-7.158z"/></svg>
+            Perplexity
+        </a>
+    </div>
 </div>
 
 {{ else }}
