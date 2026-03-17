@@ -103,6 +103,79 @@
             .tech-slide {
                 float: left;
             }
+
+            /* ── Tabs shortcode ── */
+            .tabs-component { margin: 1.5rem 0; }
+
+            .tabs-header {
+                display: flex;
+                gap: 0;
+                border-bottom: 2px solid #374151;
+                margin-bottom: 0;
+                flex-wrap: wrap;
+            }
+
+            .tab-btn {
+                padding: 0.5rem 1.1rem;
+                font-size: 0.82rem;
+                font-weight: 600;
+                border: none;
+                background: transparent;
+                cursor: pointer;
+                color: #9ca3af;
+                border-bottom: 2px solid transparent;
+                margin-bottom: -2px;
+                transition: color 0.15s, border-color 0.15s;
+                font-family: inherit;
+            }
+            .tab-btn:hover { color: #e5e7eb; }
+            .tab-btn.active {
+                color: #f3f4f6;
+                border-bottom-color: #3b82f6;
+            }
+            html:not(.dark) .tab-btn { color: #6b7280; }
+            html:not(.dark) .tab-btn:hover { color: #111827; }
+            html:not(.dark) .tab-btn.active {
+                color: #111827;
+                border-bottom-color: #2563eb;
+            }
+            html:not(.dark) .tabs-header { border-bottom-color: #d1d5db; }
+
+            .tab-panel {
+                background: #1e1e2e;
+                border: 1px solid #374151;
+                border-top: none;
+                border-radius: 0 0 0.5rem 0.5rem;
+                padding: 1rem 1.25rem;
+            }
+            html:not(.dark) .tab-panel {
+                background: #f8fafc;
+                border-color: #d1d5db;
+            }
+            .tab-panel pre {
+                margin: 0 !important;
+                background: transparent !important;
+                padding: 0 !important;
+            }
+            .tab-panel code { font-size: 0.82rem; }
+            .tab-copy-btn {
+                position: absolute; top: 0.5rem; right: 0.5rem;
+                display: flex; align-items: center; gap: 5px;
+                padding: 4px 10px; border-radius: 6px;
+                border: 1px solid rgba(255,255,255,0.12);
+                background: rgba(255,255,255,0.06);
+                color: rgba(255,255,255,0.55);
+                font-size: 0.7rem; font-weight: 500;
+                cursor: pointer; transition: all 0.2s ease;
+            }
+            html:not(.dark) .tab-copy-btn {
+                border-color: rgba(0,0,0,0.12);
+                background: rgba(0,0,0,0.04);
+                color: rgba(0,0,0,0.45);
+            }
+            .tab-copy-btn:hover { background: rgba(255,255,255,0.14); color: #e0e0e0; }
+            html:not(.dark) .tab-copy-btn:hover { background: rgba(0,0,0,0.1); color: #111; }
+            .tab-copy-btn.copied { background: #28c840; color: #fff; border-color: #28c840; }
         </style>
     </head>
     <body class="min-h-screen bg-bg-primary-light dark:bg-bg-primary-dark text-text-primary-light dark:text-text-primary-dark">

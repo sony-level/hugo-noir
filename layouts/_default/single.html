@@ -507,6 +507,7 @@
     .ide-lang-icon.lang-text { background: #6b7280; }
     .ide-lang-icon.lang-mermaid { background: #ff3670; }
     .ide-lang-icon.lang-excalidraw { background: #6965db; }
+    .ide-lang-icon.lang-terraform, .ide-lang-icon.lang-tf, .ide-lang-icon.lang-hcl { background: #7b42bc; }
     .ide-lang {
         font-size: 0.72rem; font-weight: 600;
         color: #64748b; text-transform: uppercase; letter-spacing: 0.04em;
@@ -708,7 +709,8 @@
             'dart': 'Dart', 'docker': 'Docker', 'dockerfile': 'Dockerfile',
             'nginx': 'Nginx', 'conf': 'Config', 'toml': 'TOML', 'ini': 'INI',
             'markdown': 'Markdown', 'md': 'Markdown', 'text': 'Text', 'txt': 'Text',
-            'bash': 'Bash', 'zsh': 'Zsh', 'sh': 'Shell'
+            'bash': 'Bash', 'zsh': 'Zsh', 'sh': 'Shell',
+            'terraform': 'Terraform', 'tf': 'Terraform', 'hcl': 'HCL'
         };
 
         // Initialize Mermaid
@@ -729,6 +731,30 @@
             (function(pre) {
                 try {
                     if (pre.parentElement && (pre.parentElement.classList.contains('terminal-wrapper') || pre.parentElement.classList.contains('ide-wrapper') || pre.parentElement.classList.contains('mermaid-body'))) return;
+                    if (pre.closest && pre.closest('.tabs-component')) {
+                        var tabCode = pre.querySelector('code');
+                        if (tabCode && window.hljs) {
+                            try { window.hljs.highlightElement(tabCode); } catch(e) {}
+                        }
+                        var tabPanel = pre.closest('.tab-panel');
+                        if (tabPanel && !tabPanel.querySelector('.tab-copy-btn')) {
+                            tabPanel.style.position = 'relative';
+                            var copyBtn = document.createElement('button');
+                            copyBtn.type = 'button';
+                            copyBtn.className = 'tab-copy-btn';
+                            copyBtn.innerHTML = copyIcon + '<span>Copier</span>';
+                            copyBtn.addEventListener('click', function() {
+                                var text = tabCode ? tabCode.textContent : pre.textContent;
+                                navigator.clipboard.writeText(text).then(function() {
+                                    copyBtn.classList.add('copied');
+                                    copyBtn.innerHTML = checkIcon + '<span>Copié !</span>';
+                                    setTimeout(function() { copyBtn.classList.remove('copied'); copyBtn.innerHTML = copyIcon + '<span>Copier</span>'; }, 2000);
+                                });
+                            });
+                            tabPanel.appendChild(copyBtn);
+                        }
+                        return;
+                    }
                     var code = pre.querySelector('code');
                     var lang = '';
                     if (code && code.className) {
