@@ -413,10 +413,6 @@
     </div>
 </div>
 
-<!-- Highlight.js for IDE-style syntax highlighting -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" id="hljs-dark-theme-pd">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-light-theme-pd" disabled>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <!-- Mermaid for architecture diagrams -->
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <!-- Excalidraw for interactive diagrams -->
@@ -479,53 +475,6 @@
     .blog-content pre code .sh-pipe { color: #585b70; }
     .blog-content pre code .sh-url { color: #38bdf8; }
     .blog-content pre code .sh-variable { color: #f5c2e7; }
-
-    /* IDE style — code blocks */
-    .ide-wrapper { position: relative; margin: 1.5rem 0; border-radius: 0.75rem; overflow: hidden; border: 1px solid #e2e8f0; background: #fafbfc; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-    html.dark .ide-wrapper { border-color: #2d3748; background: #1a1b26; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-    .ide-header { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 1rem; background: #f1f5f9; border-bottom: 1px solid #e2e8f0; }
-    html.dark .ide-header { background: #13141c; border-bottom-color: #2d3748; }
-    .ide-header-left { display: flex; align-items: center; gap: 8px; }
-    .ide-lang-icon { width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 10px; font-weight: 700; color: #fff; }
-    .ide-lang-icon.lang-javascript, .ide-lang-icon.lang-js { background: #f7df1e; color: #000; }
-    .ide-lang-icon.lang-typescript, .ide-lang-icon.lang-ts { background: #3178c6; }
-    .ide-lang-icon.lang-python, .ide-lang-icon.lang-py { background: #3776ab; }
-    .ide-lang-icon.lang-java { background: #ed8b00; }
-    .ide-lang-icon.lang-go { background: #00add8; }
-    .ide-lang-icon.lang-rust, .ide-lang-icon.lang-rs { background: #ce422b; }
-    .ide-lang-icon.lang-ruby, .ide-lang-icon.lang-rb { background: #cc342d; }
-    .ide-lang-icon.lang-php { background: #777bb4; }
-    .ide-lang-icon.lang-html { background: #e34f26; }
-    .ide-lang-icon.lang-css { background: #1572b6; }
-    .ide-lang-icon.lang-json { background: #292929; }
-    .ide-lang-icon.lang-yaml, .ide-lang-icon.lang-yml { background: #cb171e; }
-    .ide-lang-icon.lang-xml { background: #f26522; }
-    .ide-lang-icon.lang-sql { background: #336791; }
-    .ide-lang-icon.lang-c { background: #555555; }
-    .ide-lang-icon.lang-cpp { background: #00599c; }
-    .ide-lang-icon.lang-csharp, .ide-lang-icon.lang-cs { background: #68217a; }
-    .ide-lang-icon.lang-swift { background: #fa7343; }
-    .ide-lang-icon.lang-kotlin, .ide-lang-icon.lang-kt { background: #7f52ff; }
-    .ide-lang-icon.lang-dart { background: #0175c2; }
-    .ide-lang-icon.lang-docker, .ide-lang-icon.lang-dockerfile { background: #2496ed; }
-    .ide-lang-icon.lang-nginx, .ide-lang-icon.lang-conf { background: #009639; }
-    .ide-lang-icon.lang-toml { background: #9c4121; }
-    .ide-lang-icon.lang-ini { background: #6d8086; }
-    .ide-lang-icon.lang-markdown, .ide-lang-icon.lang-md { background: #083fa1; }
-    .ide-lang-icon.lang-text { background: #6b7280; }
-    .ide-lang-icon.lang-mermaid { background: #ff3670; }
-    .ide-lang-icon.lang-excalidraw { background: #6965db; }
-    .ide-lang { font-size: 0.72rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; }
-    html.dark .ide-lang { color: #94a3b8; }
-    .ide-copy { display: flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 6px; border: 1px solid #e2e8f0; background: transparent; color: #64748b; font-size: 0.7rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; }
-    html.dark .ide-copy { border-color: #374151; color: #94a3b8; }
-    .ide-copy:hover { background: #e2e8f0; color: #334155; }
-    html.dark .ide-copy:hover { background: #2d3748; color: #e2e8f0; }
-    .ide-copy.copied { background: #10b981; color: #fff; border-color: #10b981; }
-    .ide-copy svg { flex-shrink: 0; }
-    .ide-wrapper pre { border-radius: 0; padding: 1rem 1.25rem; overflow-x: auto; margin: 0; border: none; background: transparent; }
-    .ide-wrapper pre code { padding: 0; background: transparent; font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace; font-size: 0.85rem; line-height: 1.7; }
-    .ide-wrapper pre code.hljs { background: transparent; padding: 0; }
 
     /* Mermaid diagram container */
     .mermaid-wrapper { margin: 1.5rem 0; border-radius: 0.75rem; overflow: hidden; border: 1px solid #e2e8f0; background: #ffffff; }
@@ -608,19 +557,6 @@
             flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' },
             fontFamily: 'Inter, system-ui, sans-serif'
         });
-
-        // Highlight.js theme sync
-        function syncHljsTheme() {
-            var dark = document.documentElement.classList.contains('dark');
-            var darkSheet = document.getElementById('hljs-dark-theme-pd');
-            var lightSheet = document.getElementById('hljs-light-theme-pd');
-            if (darkSheet) darkSheet.disabled = !dark;
-            if (lightSheet) lightSheet.disabled = dark;
-        }
-        syncHljsTheme();
-        new MutationObserver(function(mutations) {
-            mutations.forEach(function(m) { if (m.attributeName === 'class') syncHljsTheme(); });
-        }).observe(document.documentElement, { attributes: true });
 
         // Lightbox
         var lb = document.createElement('div');
@@ -771,14 +707,14 @@
                         var copyBtn = document.createElement('button');
                         copyBtn.type = 'button';
                         copyBtn.className = 'terminal-copy';
-                        copyBtn.innerHTML = copyIcon + '<span>Copier</span>';
+                        copyBtn.innerHTML = copyIcon;
                         copyBtn.addEventListener('click', function() {
                             var text = code ? code.textContent : pre.textContent;
                             text = text.replace(/^[\$~]+\s*/gm, '').trim();
                             navigator.clipboard.writeText(text).then(function() {
                                 copyBtn.classList.add('copied');
-                                copyBtn.innerHTML = checkIcon + '<span>Copié !</span>';
-                                setTimeout(function() { copyBtn.classList.remove('copied'); copyBtn.innerHTML = copyIcon + '<span>Copier</span>'; }, 2000);
+                                copyBtn.innerHTML = checkIcon;
+                                setTimeout(function() { copyBtn.classList.remove('copied'); copyBtn.innerHTML = copyIcon; }, 2000);
                             });
                         });
                         header.appendChild(dots);
@@ -808,13 +744,13 @@
                         var copyBtn = document.createElement('button');
                         copyBtn.type = 'button';
                         copyBtn.className = 'ide-copy';
-                        copyBtn.innerHTML = copyIcon + '<span>Copier</span>';
+                        copyBtn.innerHTML = copyIcon;
                         copyBtn.addEventListener('click', function() {
                             var text = code ? code.textContent : pre.textContent;
                             navigator.clipboard.writeText(text).then(function() {
                                 copyBtn.classList.add('copied');
-                                copyBtn.innerHTML = checkIcon + '<span>Copié !</span>';
-                                setTimeout(function() { copyBtn.classList.remove('copied'); copyBtn.innerHTML = copyIcon + '<span>Copier</span>'; }, 2000);
+                                copyBtn.innerHTML = checkIcon;
+                                setTimeout(function() { copyBtn.classList.remove('copied'); copyBtn.innerHTML = copyIcon; }, 2000);
                             });
                         });
                         header.appendChild(headerLeft);
@@ -822,10 +758,14 @@
                         wrapper.appendChild(header);
                         pre.parentNode.insertBefore(wrapper, pre);
                         wrapper.appendChild(pre);
-                        // Apply highlight.js
-                        if (code && window.hljs) {
-                            if (lang && lang !== 'text') code.classList.add('language-' + lang);
-                            try { window.hljs.highlightElement(code); } catch(e) {}
+                        // Apply Prism.js (autoloader handles all languages)
+                        if (code && window.Prism) {
+                            if (lang && lang !== 'text') code.className = 'language-' + lang;
+                            if (Prism.plugins && Prism.plugins.autoloader) {
+                                Prism.plugins.autoloader.languages_path =
+                                    'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/';
+                            }
+                            try { Prism.highlightElement(code); } catch(e) {}
                         }
                     }
                 } catch(e) {}

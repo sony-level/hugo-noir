@@ -104,6 +104,63 @@
                 float: left;
             }
 
+            /* ── Code block — thème Aurora X ── */
+            .ide-wrapper {
+                position: relative; margin: 1.5rem 0;
+                border-radius: 0.6rem; overflow: hidden;
+                background: #07090f; border: 1px solid rgba(255,255,255,0.07);
+            }
+            .ide-header {
+                position: absolute; top: 0.5rem; right: 0.6rem;
+                display: flex; align-items: center;
+                padding: 0; background: transparent; border: none; z-index: 2;
+            }
+            .ide-header-left, .ide-lang, .ide-lang-icon { display: none; }
+            .ide-copy {
+                display: flex; align-items: center; justify-content: center;
+                width: 26px; height: 26px; border-radius: 5px;
+                border: 1px solid rgba(255,255,255,0.15);
+                background: rgba(7,9,15,0.8); color: rgba(255,255,255,0.4);
+                cursor: pointer; transition: all 0.15s ease; opacity: 0;
+            }
+            .ide-wrapper:hover .ide-copy { opacity: 1; }
+            .ide-copy:hover { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.9); border-color: rgba(255,255,255,0.3); }
+            .ide-copy.copied { opacity: 1; background: #3fb950; color: #fff; border-color: #3fb950; }
+            .ide-copy svg { flex-shrink: 0; }
+            .ide-wrapper pre {
+                padding: 1.1rem 1.25rem; overflow-x: auto;
+                margin: 0; border: none; background: transparent;
+            }
+            .ide-wrapper pre[class*="language-"] { background: transparent; margin: 0; padding: 1.1rem 1.25rem; }
+            .ide-wrapper code[class*="language-"] { background: transparent; }
+            .ide-wrapper pre code {
+                padding: 0; background: transparent !important;
+                font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+                font-size: 0.84rem; line-height: 1.75; color: #c5cdd9;
+            }
+            .ide-wrapper pre code .token { background: transparent !important; }
+            /* Aurora X tokens */
+            .ide-wrapper .token.comment,.ide-wrapper .token.prolog,
+            .ide-wrapper .token.doctype,.ide-wrapper .token.cdata { color: #8b949e; font-style: italic; }
+            .ide-wrapper .token.keyword,.ide-wrapper .token.tag,
+            .ide-wrapper .token.selector,.ide-wrapper .token.rule,
+            .ide-wrapper .token.important,.ide-wrapper .token.atrule { color: #e6a0d0; }
+            .ide-wrapper .token.string,.ide-wrapper .token.attr-value,
+            .ide-wrapper .token.char,.ide-wrapper .token.regex { color: #96c5f7; }
+            .ide-wrapper .token.number,.ide-wrapper .token.boolean,
+            .ide-wrapper .token.constant { color: #f0883e; }
+            .ide-wrapper .token.function,.ide-wrapper .token.function-name { color: #79b8ff; }
+            .ide-wrapper .token.class-name,.ide-wrapper .token.builtin { color: #ffa657; }
+            .ide-wrapper .token.attr-name,.ide-wrapper .token.property { color: #79b8ff; }
+            .ide-wrapper .token.operator,.ide-wrapper .token.entity,
+            .ide-wrapper .token.url { color: #ff7b72; }
+            .ide-wrapper .token.punctuation { color: #8b949e; }
+            .ide-wrapper .token.variable,.ide-wrapper .token.symbol { color: #c9d1d9; }
+            .ide-wrapper .token.inserted { color: #3fb950; }
+            .ide-wrapper .token.deleted { color: #f85149; }
+            .ide-wrapper .token.bold { font-weight: bold; }
+            .ide-wrapper .token.italic { font-style: italic; }
+
             /* ── Tabs shortcode ── */
             .tabs-component { margin: 1.5rem 0; }
 
@@ -184,6 +241,68 @@
             {{ block "main" . }}{{ end }}
         </main>
         {{ partial "footer" . }}
+
+        <!-- Prism.js — syntax highlighting (300+ langages, autoloader) -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" id="prism-dark-theme" disabled>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" id="prism-light-theme" disabled>
+        <script>window.Prism = window.Prism || {}; Prism.manual = true;</script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+        <!-- Code block universal script (Andromeeda theme) -->
+        <script>
+        (function() {
+            var copyIcon  = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+            var checkIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
+
+            document.addEventListener('DOMContentLoaded', function() {
+                var allPres = document.querySelectorAll('pre');
+                for (var i = 0; i < allPres.length; i++) {
+                    (function(pre) {
+                        // Skip if already wrapped or inside a tab/special container
+                        if (pre.closest && (pre.closest('.ide-wrapper') || pre.closest('.tabs-component'))) return;
+                        var code = pre.querySelector('code');
+                        var lang = '';
+                        if (code && code.className) {
+                            var m = code.className.match(/language-(\w+)/);
+                            if (m) lang = m[1].toLowerCase();
+                        }
+                        // Build wrapper
+                        var wrapper = document.createElement('div');
+                        wrapper.className = 'ide-wrapper';
+                        var header = document.createElement('div');
+                        header.className = 'ide-header';
+                        var copyBtn = document.createElement('button');
+                        copyBtn.type = 'button';
+                        copyBtn.className = 'ide-copy';
+                        copyBtn.setAttribute('aria-label', 'Copier');
+                        copyBtn.innerHTML = copyIcon;
+                        copyBtn.addEventListener('click', function() {
+                            var text = code ? code.textContent : pre.textContent;
+                            navigator.clipboard.writeText(text).then(function() {
+                                copyBtn.classList.add('copied');
+                                copyBtn.innerHTML = checkIcon;
+                                setTimeout(function() { copyBtn.classList.remove('copied'); copyBtn.innerHTML = copyIcon; }, 2000);
+                            });
+                        });
+                        header.appendChild(copyBtn);
+                        wrapper.appendChild(header);
+                        pre.parentNode.insertBefore(wrapper, pre);
+                        wrapper.appendChild(pre);
+                        // Highlight
+                        if (code && window.Prism) {
+                            if (lang) code.className = 'language-' + lang;
+                            if (Prism.plugins && Prism.plugins.autoloader) {
+                                Prism.plugins.autoloader.languages_path =
+                                    'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/';
+                            }
+                            try { Prism.highlightElement(code); } catch(e) {}
+                        }
+                    })(allPres[i]);
+                }
+            });
+        })();
+        </script>
 
         <!-- Vercel Analytics -->
         <script>

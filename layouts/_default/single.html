@@ -91,8 +91,8 @@
         {{ end }}
 
         <!-- Blog Content -->
-        <div class="flex-1 order-1 lg:order-2">
-            <article class="max-w-3xl">
+        <div class="flex-1 min-w-0 order-1 lg:order-2">
+            <article class="max-w-3xl mx-auto">
                 <div class="blog-content prose prose-lg max-w-none">
                     {{ .Content }}
                 </div>
@@ -337,10 +337,7 @@
 </div>
 {{ end }}
 
-<!-- Highlight.js for IDE-style syntax highlighting -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" id="hljs-dark-theme">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-light-theme" disabled>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<!-- Prism.js chargé depuis baseof.html -->
 <!-- Mermaid for architecture diagrams -->
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <!-- Excalidraw for interactive diagrams -->
@@ -437,108 +434,7 @@
     .blog-content pre code .sh-url { color: #38bdf8; }
     .blog-content pre code .sh-variable { color: #f5c2e7; }
 
-    /* ============================================
-       IDE STYLE — for code blocks (non-shell)
-       Like a code editor / IDE with syntax colors
-       ============================================ */
-    .ide-wrapper {
-        position: relative;
-        margin: 1.5rem 0;
-        border-radius: 0.75rem;
-        overflow: hidden;
-        border: 1px solid #e2e8f0;
-        background: #fafbfc;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
-    html.dark .ide-wrapper {
-        border-color: #2d3748;
-        background: #1a1b26;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    }
-    .ide-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0.5rem 1rem;
-        background: #f1f5f9;
-        border-bottom: 1px solid #e2e8f0;
-    }
-    html.dark .ide-header {
-        background: #13141c;
-        border-bottom-color: #2d3748;
-    }
-    .ide-header-left {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    .ide-lang-icon {
-        width: 18px; height: 18px;
-        display: flex; align-items: center; justify-content: center;
-        border-radius: 4px;
-        font-size: 10px; font-weight: 700;
-        color: #fff;
-    }
-    .ide-lang-icon.lang-javascript, .ide-lang-icon.lang-js { background: #f7df1e; color: #000; }
-    .ide-lang-icon.lang-typescript, .ide-lang-icon.lang-ts { background: #3178c6; }
-    .ide-lang-icon.lang-python, .ide-lang-icon.lang-py { background: #3776ab; }
-    .ide-lang-icon.lang-java { background: #ed8b00; }
-    .ide-lang-icon.lang-go { background: #00add8; }
-    .ide-lang-icon.lang-rust, .ide-lang-icon.lang-rs { background: #ce422b; }
-    .ide-lang-icon.lang-ruby, .ide-lang-icon.lang-rb { background: #cc342d; }
-    .ide-lang-icon.lang-php { background: #777bb4; }
-    .ide-lang-icon.lang-html { background: #e34f26; }
-    .ide-lang-icon.lang-css { background: #1572b6; }
-    .ide-lang-icon.lang-json { background: #292929; }
-    .ide-lang-icon.lang-yaml, .ide-lang-icon.lang-yml { background: #cb171e; }
-    .ide-lang-icon.lang-xml { background: #f26522; }
-    .ide-lang-icon.lang-sql { background: #336791; }
-    .ide-lang-icon.lang-c { background: #555555; }
-    .ide-lang-icon.lang-cpp { background: #00599c; }
-    .ide-lang-icon.lang-csharp, .ide-lang-icon.lang-cs { background: #68217a; }
-    .ide-lang-icon.lang-swift { background: #fa7343; }
-    .ide-lang-icon.lang-kotlin, .ide-lang-icon.lang-kt { background: #7f52ff; }
-    .ide-lang-icon.lang-dart { background: #0175c2; }
-    .ide-lang-icon.lang-docker, .ide-lang-icon.lang-dockerfile { background: #2496ed; }
-    .ide-lang-icon.lang-nginx, .ide-lang-icon.lang-conf { background: #009639; }
-    .ide-lang-icon.lang-toml { background: #9c4121; }
-    .ide-lang-icon.lang-ini { background: #6d8086; }
-    .ide-lang-icon.lang-markdown, .ide-lang-icon.lang-md { background: #083fa1; }
-    .ide-lang-icon.lang-text { background: #6b7280; }
-    .ide-lang-icon.lang-mermaid { background: #ff3670; }
-    .ide-lang-icon.lang-excalidraw { background: #6965db; }
-    .ide-lang-icon.lang-terraform, .ide-lang-icon.lang-tf, .ide-lang-icon.lang-hcl { background: #7b42bc; }
-    .ide-lang {
-        font-size: 0.72rem; font-weight: 600;
-        color: #64748b; text-transform: uppercase; letter-spacing: 0.04em;
-    }
-    html.dark .ide-lang { color: #94a3b8; }
-    .ide-copy {
-        display: flex; align-items: center; gap: 5px;
-        padding: 4px 10px; border-radius: 6px;
-        border: 1px solid #e2e8f0; background: transparent;
-        color: #64748b; font-size: 0.7rem; font-weight: 500;
-        cursor: pointer; transition: all 0.2s ease;
-    }
-    html.dark .ide-copy { border-color: #374151; color: #94a3b8; }
-    .ide-copy:hover { background: #e2e8f0; color: #334155; }
-    html.dark .ide-copy:hover { background: #2d3748; color: #e2e8f0; }
-    .ide-copy.copied { background: #10b981; color: #fff; border-color: #10b981; }
-    .ide-copy svg { flex-shrink: 0; }
-
-    /* IDE code area with line numbers */
-    .ide-wrapper pre {
-        border-radius: 0; padding: 1rem 1.25rem;
-        overflow-x: auto; margin: 0; border: none;
-        background: transparent;
-    }
-    .ide-wrapper pre code {
-        padding: 0; background: transparent;
-        font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
-        font-size: 0.85rem; line-height: 1.7;
-    }
-    /* Override hljs background inside ide-wrapper */
-    .ide-wrapper pre code.hljs { background: transparent; padding: 0; }
+    /* ide-wrapper styles dans baseof.html */
 
     /* Blog image lightbox */
     .blog-content img { cursor: zoom-in; border-radius: 0.5rem; transition: transform 0.2s ease, box-shadow 0.2s ease; }
@@ -683,8 +579,8 @@
         // Highlight.js theme sync with dark mode
         function syncHljsTheme() {
             var isDark = document.documentElement.classList.contains('dark');
-            var darkSheet = document.getElementById('hljs-dark-theme');
-            var lightSheet = document.getElementById('hljs-light-theme');
+            var darkSheet = document.getElementById('prism-dark-theme');
+            var lightSheet = document.getElementById('prism-light-theme');
             if (darkSheet) darkSheet.disabled = !isDark;
             if (lightSheet) lightSheet.disabled = isDark;
         }
@@ -733,8 +629,8 @@
                     if (pre.parentElement && (pre.parentElement.classList.contains('terminal-wrapper') || pre.parentElement.classList.contains('ide-wrapper') || pre.parentElement.classList.contains('mermaid-body'))) return;
                     if (pre.closest && pre.closest('.tabs-component')) {
                         var tabCode = pre.querySelector('code');
-                        if (tabCode && window.hljs) {
-                            try { window.hljs.highlightElement(tabCode); } catch(e) {}
+                        if (tabCode && window.Prism) {
+                            try { Prism.highlightElement(tabCode); } catch(e) {}
                         }
                         var tabPanel = pre.closest('.tab-panel');
                         if (tabPanel && !tabPanel.querySelector('.tab-copy-btn')) {
@@ -742,13 +638,13 @@
                             var copyBtn = document.createElement('button');
                             copyBtn.type = 'button';
                             copyBtn.className = 'tab-copy-btn';
-                            copyBtn.innerHTML = copyIcon + '<span>Copier</span>';
+                            copyBtn.innerHTML = copyIcon;
                             copyBtn.addEventListener('click', function() {
                                 var text = tabCode ? tabCode.textContent : pre.textContent;
                                 navigator.clipboard.writeText(text).then(function() {
                                     copyBtn.classList.add('copied');
-                                    copyBtn.innerHTML = checkIcon + '<span>Copié !</span>';
-                                    setTimeout(function() { copyBtn.classList.remove('copied'); copyBtn.innerHTML = copyIcon + '<span>Copier</span>'; }, 2000);
+                                    copyBtn.innerHTML = checkIcon;
+                                    setTimeout(function() { copyBtn.classList.remove('copied'); copyBtn.innerHTML = copyIcon; }, 2000);
                                 });
                             });
                             tabPanel.appendChild(copyBtn);
@@ -857,21 +753,17 @@
                         var langIcon = document.createElement('span');
                         langIcon.className = 'ide-lang-icon lang-' + (lang || 'text');
                         langIcon.textContent = (lang || 'T').substring(0, 2).toUpperCase();
-                        var langLabel = document.createElement('span');
-                        langLabel.className = 'ide-lang';
-                        langLabel.textContent = displayLang;
                         headerLeft.appendChild(langIcon);
-                        headerLeft.appendChild(langLabel);
                         var copyBtn = document.createElement('button');
                         copyBtn.type = 'button';
                         copyBtn.className = 'ide-copy';
-                        copyBtn.innerHTML = copyIcon + '<span>Copier</span>';
+                        copyBtn.innerHTML = copyIcon;
                         copyBtn.addEventListener('click', function() {
                             var text = code ? code.textContent : pre.textContent;
                             navigator.clipboard.writeText(text).then(function() {
                                 copyBtn.classList.add('copied');
-                                copyBtn.innerHTML = checkIcon + '<span>Copié !</span>';
-                                setTimeout(function() { copyBtn.classList.remove('copied'); copyBtn.innerHTML = copyIcon + '<span>Copier</span>'; }, 2000);
+                                copyBtn.innerHTML = checkIcon;
+                                setTimeout(function() { copyBtn.classList.remove('copied'); copyBtn.innerHTML = copyIcon; }, 2000);
                             });
                         });
                         header.appendChild(headerLeft);
@@ -880,12 +772,16 @@
                         pre.parentNode.insertBefore(wrapper, pre);
                         wrapper.appendChild(pre);
 
-                        // Apply highlight.js for syntax coloring
-                        if (code && window.hljs) {
+                        // Apply Prism.js for syntax coloring (autoloader handles all languages)
+                        if (code && window.Prism) {
                             if (lang && lang !== 'text') {
-                                code.classList.add('language-' + lang);
+                                code.className = 'language-' + lang;
                             }
-                            try { window.hljs.highlightElement(code); } catch(e) {}
+                            if (Prism.plugins && Prism.plugins.autoloader) {
+                                Prism.plugins.autoloader.languages_path =
+                                    'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/';
+                            }
+                            try { Prism.highlightElement(code); } catch(e) {}
                         }
                     }
                 } catch(e) { /* skip on error */ }
