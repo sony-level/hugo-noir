@@ -1,0 +1,55 @@
+{{ $authorData := index site.Data .Language.Lang "author" }}
+{{ $author := cond (ne $authorData nil) $authorData.author site.Params }}
+{{ $ver := now.Unix }}
+<link rel="stylesheet" href="/css/assistant-widget.css?v={{ $ver }}">
+<div
+  id="sony-assistant"
+  class="sony-assistant"
+  data-lang="{{ .Language.Lang }}"
+  data-page-title="{{ .Title }}"
+  data-section="{{ .Section }}"
+  data-path="{{ .RelPermalink }}"
+  data-author="{{ with $author }}{{ .name }}{{ else }}Level Sony M.{{ end }}"
+>
+  <div class="sony-assistant__nudge" data-assistant-nudge hidden>
+    <p data-assistant-nudge-text></p>
+    <button type="button" data-assistant-nudge-close aria-label="Fermer la suggestion">×</button>
+  </div>
+
+  <section class="sony-assistant__panel" data-assistant-panel hidden aria-label="Assistant IA du portfolio">
+    <header class="sony-assistant__header">
+      <div>
+        <p class="sony-assistant__eyebrow" data-assistant-status>Assistant portfolio</p>
+        <h2 data-assistant-title>Pose une question sur Sony</h2>
+      </div>
+      <button type="button" class="sony-assistant__icon-btn" data-assistant-close aria-label="Fermer l'assistant">
+        ×
+      </button>
+    </header>
+
+    <div class="sony-assistant__messages" data-assistant-messages aria-live="polite"></div>
+
+    <div class="sony-assistant__suggestions" data-assistant-suggestions></div>
+
+    <form class="sony-assistant__form" data-assistant-form>
+      <textarea
+        data-assistant-input
+        rows="2"
+        maxlength="700"
+        placeholder="Demande un résumé recruteur, un projet, une compétence..."
+        aria-label="Message pour l'assistant"
+      ></textarea>
+      <button type="submit" data-assistant-submit>Envoyer</button>
+    </form>
+
+    <p class="sony-assistant__note" data-assistant-note>
+      Mémoire locale active: l'assistant adapte ses suggestions à cette visite.
+    </p>
+  </section>
+
+  <button type="button" class="sony-assistant__launcher" data-assistant-launcher aria-label="Ouvrir l'assistant IA">
+    <span class="sony-assistant__pulse" aria-hidden="true"></span>
+    <img src="/images/assistant/tr.png" alt="" class="sony-assistant__mascot">
+  </button>
+</div>
+<script defer src="/js/assistant-widget.js?v={{ $ver }}"></script>
