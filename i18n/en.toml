@@ -55,3 +55,6 @@ other = "Built using"
 [takeALookAtMy]
 other = "Take a look at my" 
 
+[glossaryToggle]
+other = "Glossary mode"
+

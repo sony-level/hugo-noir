@@ -54,3 +54,6 @@ other = "Construit avec"
 
 [takeALookAtMy]
 other = "Jetez un œil à mon" 
+
+[glossaryToggle]
+other = "Mode glossaire"
