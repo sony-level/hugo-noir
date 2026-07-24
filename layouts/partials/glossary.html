@@ -1,0 +1,250 @@
+<style>
+  .glossary-term {
+    cursor: help;
+    transition: color 0.15s ease, text-decoration-color 0.15s ease;
+  }
+
+  html.glossary-active .glossary-term {
+    color: #dc2626;
+    text-decoration: underline;
+    text-decoration-color: #dc2626;
+    text-underline-offset: 0.15em;
+  }
+
+  html.dark.glossary-active .glossary-term {
+    color: #f87171;
+    text-decoration-color: #f87171;
+  }
+
+  .glossary-toggle--active {
+    color: #dc2626 !important;
+  }
+
+  html.dark .glossary-toggle--active {
+    color: #f87171 !important;
+  }
+
+  #glossary-tooltip {
+    position: fixed;
+    z-index: 9999;
+    max-width: 280px;
+    padding: 0.6rem 0.85rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.45;
+    background-color: #1f2937;
+    color: #f3f4f6;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.15s ease;
+  }
+
+  #glossary-tooltip.glossary-tooltip-hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  html.dark #glossary-tooltip {
+    background-color: #374151;
+    color: #f3f4f6;
+  }
+</style>
+
+<div id="glossary-tooltip" class="glossary-tooltip-hidden" role="tooltip" aria-hidden="true"></div>
+
+<script>
+(function () {
+  const STORAGE_KEY = 'glossary-active';
+  const ACTIVE_CLASS = 'glossary-active';
+  const tooltip = document.getElementById('glossary-tooltip');
+  const toggles = document.querySelectorAll('.glossary-toggle');
+  const glossaryTerms = {{ (index site.Data .Page.Language.Lang "glossary").terms | jsonify | safeJS }};
+  const glossaryEnabled = {{ if in (slice "blogs" "projects") .Section }}true{{ else }}false{{ end }};
+  let pinned = false;
+
+  function escapeRegExp(value) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function annotateGlossary() {
+    const content = document.querySelector('.blog-content');
+    if (!glossaryEnabled || !content || !Array.isArray(glossaryTerms)) return;
+
+    const definitions = [];
+    glossaryTerms.forEach(function (entry) {
+      const labels = [entry.term].concat(entry.aliases || []);
+      labels.forEach(function (label) {
+        if (label) definitions.push({ label: label, term: entry.term, definition: entry.definition });
+      });
+    });
+    definitions.sort(function (a, b) { return b.label.length - a.label.length; });
+
+    const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (node) {
+        const parent = node.parentElement;
+        if (!parent || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+        if (parent.closest('a, code, pre, script, style, button, .glossary-term')) {
+          return NodeFilter.FILTER_REJECT;
+        }
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    const textNodes = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+    textNodes.forEach(function (node) {
+      let parts = [node.nodeValue];
+      definitions.forEach(function (entry) {
+        const pattern = new RegExp(
+          '(^|[^\\p{L}\\p{N}])(' + escapeRegExp(entry.label) + ')(?=$|[^\\p{L}\\p{N}])',
+          'giu'
+        );
+        const next = [];
+        parts.forEach(function (part) {
+          if (typeof part !== 'string') {
+            next.push(part);
+            return;
+          }
+          let cursor = 0;
+          let match;
+          while ((match = pattern.exec(part)) !== null) {
+            const termStart = match.index + match[1].length;
+            if (termStart > cursor) next.push(part.slice(cursor, termStart));
+            const span = document.createElement('span');
+            span.className = 'glossary-term';
+            span.dataset.term = entry.term;
+            span.dataset.definition = entry.definition;
+            span.textContent = match[2];
+            span.tabIndex = 0;
+            next.push(span);
+            cursor = termStart + match[2].length;
+          }
+          if (cursor < part.length) next.push(part.slice(cursor));
+        });
+        parts = next;
+      });
+
+      if (parts.some(function (part) { return typeof part !== 'string'; })) {
+        const fragment = document.createDocumentFragment();
+        parts.forEach(function (part) {
+          fragment.appendChild(typeof part === 'string' ? document.createTextNode(part) : part);
+        });
+        node.replaceWith(fragment);
+      }
+    });
+  }
+
+  annotateGlossary();
+
+  function applyGlossary(active) {
+    document.documentElement.classList.toggle(ACTIVE_CLASS, active);
+    toggles.forEach(function (btn) {
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      btn.classList.toggle('glossary-toggle--active', active);
+    });
+    localStorage.setItem(STORAGE_KEY, active ? 'true' : 'false');
+  }
+
+  const initial = localStorage.getItem(STORAGE_KEY) === 'true';
+  applyGlossary(initial);
+
+  toggles.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const active = !document.documentElement.classList.contains(ACTIVE_CLASS);
+      applyGlossary(active);
+    });
+  });
+
+  function positionTooltip(el) {
+    if (!tooltip) return;
+    const rect = el.getBoundingClientRect();
+    const ttRect = tooltip.getBoundingClientRect();
+    const padding = 8;
+
+    let top = rect.bottom + padding;
+    let left = rect.left + rect.width / 2 - ttRect.width / 2;
+
+    if (left < padding) left = padding;
+    if (left + ttRect.width > window.innerWidth - padding) {
+      left = window.innerWidth - ttRect.width - padding;
+    }
+    if (top + ttRect.height > window.innerHeight - padding) {
+      top = rect.top - ttRect.height - padding;
+    }
+
+    tooltip.style.top = top + 'px';
+    tooltip.style.left = left + 'px';
+  }
+
+  function showTooltip(el) {
+    const definition = el.getAttribute('data-definition');
+    if (!definition || !tooltip) return;
+    tooltip.textContent = definition;
+    tooltip.setAttribute('aria-hidden', 'false');
+    tooltip.classList.remove('glossary-tooltip-hidden');
+    positionTooltip(el);
+  }
+
+  function hideTooltip() {
+    if (!pinned && tooltip) {
+      tooltip.classList.add('glossary-tooltip-hidden');
+      tooltip.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  function handleEnter(e) {
+    const el = e.target.closest && e.target.closest('.glossary-term');
+    if (!el) return;
+    showTooltip(el);
+  }
+
+  function handleLeave(e) {
+    const el = e.target.closest && e.target.closest('.glossary-term');
+    if (!el) return;
+    hideTooltip();
+  }
+
+  document.body.addEventListener('mouseover', handleEnter);
+  document.body.addEventListener('mouseout', handleLeave);
+  document.body.addEventListener('focusin', handleEnter);
+  document.body.addEventListener('focusout', handleLeave);
+
+  document.body.addEventListener('click', function (e) {
+    const el = e.target.closest && e.target.closest('.glossary-term');
+    if (el) {
+      e.preventDefault();
+      if (
+        pinned &&
+        tooltip &&
+        !tooltip.classList.contains('glossary-tooltip-hidden') &&
+        tooltip.dataset.currentTerm === el.dataset.term
+      ) {
+        pinned = false;
+        tooltip.classList.add('glossary-tooltip-hidden');
+        tooltip.setAttribute('aria-hidden', 'true');
+      } else {
+        pinned = true;
+        tooltip.dataset.currentTerm = el.dataset.term;
+        showTooltip(el);
+      }
+      return;
+    }
+    pinned = false;
+    if (tooltip) {
+      tooltip.classList.add('glossary-tooltip-hidden');
+      tooltip.setAttribute('aria-hidden', 'true');
+    }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      pinned = false;
+      if (tooltip) {
+        tooltip.classList.add('glossary-tooltip-hidden');
+        tooltip.setAttribute('aria-hidden', 'true');
+      }
+    }
+  });
+})();
+</script>

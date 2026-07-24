@@ -1,0 +1,16 @@
+{{ $term := .Get 0 }}
+{{ $display := default $term (.Get 1) }}
+{{ $glossary := index site.Data .Page.Language.Lang "glossary" }}
+{{ $definition := "" }}
+{{ with $glossary }}
+  {{ range .terms }}
+    {{ if eq .term $term }}
+      {{ $definition = .definition }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ if $definition }}
+  <span class="glossary-term" data-term="{{ $term }}" data-definition="{{ $definition | htmlEscape }}">{{ $display }}</span>
+{{ else }}
+  {{ $display }}
+{{ end }}
