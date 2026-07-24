@@ -79,6 +79,7 @@
       });
     });
     definitions.sort(function (a, b) { return b.label.length - a.label.length; });
+    const annotatedTerms = new Set();
 
     const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, {
       acceptNode: function (node) {
@@ -102,7 +103,7 @@
         );
         const next = [];
         parts.forEach(function (part) {
-          if (typeof part !== 'string') {
+          if (typeof part !== 'string' || annotatedTerms.has(entry.term)) {
             next.push(part);
             return;
           }
@@ -119,6 +120,8 @@
             span.tabIndex = 0;
             next.push(span);
             cursor = termStart + match[2].length;
+            annotatedTerms.add(entry.term);
+            break;
           }
           if (cursor < part.length) next.push(part.slice(cursor));
         });
