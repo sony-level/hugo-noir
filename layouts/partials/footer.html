@@ -46,13 +46,26 @@
   {{ $authorData := index site.Data .Language.Lang "author" }}
   {{ $author := cond (ne $authorData nil) $authorData.author site.Params }}
   {{ with $author }}
+  {{ $words := split .name " " }}
+  {{ $last := index (last 1 $words) 0 }}
+  {{ $rest := .name }}
+  {{ if gt (len $words) 1 }}
+    {{ $rest = strings.TrimSuffix (printf " %s" $last) .name }}
+  {{ else }}
+    {{ $rest = "" }}
+  {{ end }}
   <div class="footer-signature">
     <div
       id="footer-dot-scatter"
       class="footer-dot-scatter text-text-primary-light dark:text-text-primary-dark"
       data-text="{{ .name }}"
     >
-      <span class="footer-dot-scatter__fallback">{{ .name }}</span>
+      <span class="footer-dot-scatter__fallback"
+        >{{ $rest }}{{ if gt (len $words) 1 }} {{ end }}<span
+          class="footer-dot-scatter__initial"
+          >{{ $last }}</span
+        ></span
+      >
     </div>
   </div>
   {{ end }}
@@ -127,6 +140,10 @@
     letter-spacing: -0.04em;
     line-height: 0.85;
     white-space: nowrap;
+  }
+
+  .footer-dot-scatter__initial {
+    text-transform: uppercase;
   }
 
   @media (max-width: 480px) {
