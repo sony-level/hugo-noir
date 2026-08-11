@@ -43,6 +43,19 @@
       </div>
     </div>
   </div>
+  {{ $authorData := index site.Data .Language.Lang "author" }}
+  {{ $author := cond (ne $authorData nil) $authorData.author site.Params }}
+  {{ with $author }}
+  <div class="footer-signature">
+    <div
+      id="footer-dot-scatter"
+      class="footer-dot-scatter text-text-primary-light dark:text-text-primary-dark"
+      data-text="{{ .name }}"
+    >
+      <span class="footer-dot-scatter__fallback">{{ .name }}</span>
+    </div>
+  </div>
+  {{ end }}
 </footer>
 
 <style>
@@ -69,4 +82,58 @@
   html.dark .animated-link::after {
     background-color: #0ea5e9; /* accent-dark (sky-500) */
   }
+
+  /*
+   * Oversized bottom signature.
+   * The Dot Scatter component scales its dot-text from its container using
+   * an internal 16:9 reference, so we give it a full-width 16:9 stage
+   * (.footer-dot-scatter) and clip it to a short visible band
+   * (.footer-signature) whose height is slightly smaller than the rendered
+   * text, producing the bottom-clipped look. Pointer hit-testing is clipped
+   * by overflow:hidden, so the hidden stage never overlaps footer links.
+   */
+  .footer-signature {
+    position: relative;
+    width: 100%;
+    height: 16vw;
+    overflow: hidden;
+  }
+
+  .footer-dot-scatter {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 56.25vw;
+    top: calc(50% - 28.125vw + 0.8vw);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @media (min-width: 1800px) {
+    .footer-signature {
+      height: 15.5rem;
+    }
+
+    .footer-dot-scatter {
+      height: 45rem;
+      top: calc(50% - 22.5rem + 0.5rem);
+    }
+  }
+
+  .footer-dot-scatter__fallback {
+    font-size: clamp(2.5rem, 11vw, 15rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 0.85;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 480px) {
+    .footer-dot-scatter__fallback {
+      white-space: normal;
+      line-height: 1;
+    }
+  }
 </style>
+<script defer src="/js/dot-scatter.js"></script>
