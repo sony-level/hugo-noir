@@ -306,6 +306,39 @@
         })();
         </script>
 
+        <!-- OriginKit User Cursor (desktop only, mounted by /js/user-cursor.js) -->
+        <style>
+            /* Theme-aware cursor colors, read by the mount script and passed
+               through the component's official color props. */
+            .user-cursor-host {
+                --cursor-color: #0284c7;
+                --cursor-text: #ffffff;
+            }
+            html.dark .user-cursor-host {
+                --cursor-color: #0ea5e9;
+                --cursor-text: #121212;
+            }
+            /* Hide the native cursor only while the custom cursor is active
+               (class toggled by the mount script on desktop fine-pointer
+               devices without prefers-reduced-motion). */
+            html.ok-cursor-active,
+            html.ok-cursor-active * {
+                cursor: none !important;
+            }
+            /* Subtle feedback while hovering interactive elements, applied
+               only to the cursor's own small elements (official classNames
+               hooks) — never to the full-viewport host, where a filter forces
+               a whole-layer recomposition and can blank the cursor. The press
+               feedback is the component's own spring scale. */
+            .ok-cursor-el {
+                transition: filter 160ms ease;
+            }
+            .user-cursor-host.is-hovering-interactive .ok-cursor-el {
+                filter: brightness(1.15) drop-shadow(0 0 5px rgba(14, 165, 233, 0.5));
+            }
+        </style>
+        <script defer src="/js/user-cursor.js"></script>
+
         <!-- Vercel Analytics -->
         <script>
             window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
